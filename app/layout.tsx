@@ -9,8 +9,12 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: config.projectName,
-  description: config.projectDescription,
+  title: `${config.projectName} - ${config.projectDescription}`,
+  description: `${config.projectDescription} - ${config.projectName}`,
+  keywords: [
+    `${config.projectName}`,
+    `${config.projectDescription}`,
+  ],
 };
 
 export default function RootLayout({
