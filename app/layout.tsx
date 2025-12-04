@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import config from "@/config";
+import { ThemeProvider } from "@/components/common/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,10 +12,7 @@ const geistSans = Geist({
 export const metadata: Metadata = {
   title: `${config.projectName} - ${config.projectDescription}`,
   description: `${config.projectDescription} - ${config.projectName}`,
-  keywords: [
-    `${config.projectName}`,
-    `${config.projectDescription}`,
-  ],
+  keywords: [`${config.projectName}`, `${config.projectDescription}`],
 };
 
 export default function RootLayout({
@@ -24,10 +22,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
