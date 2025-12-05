@@ -46,6 +46,7 @@ interface GTMStrategy {
   gtmResult: any;
   messagingResult: any;
   createdAt: string;
+  icpAnalysis?: ICPAnalysis;
 }
 
 export default function MessagingGeneratorPage() {
@@ -399,15 +400,19 @@ export default function MessagingGeneratorPage() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">
-                            {s.icpAnalysis
-                              ? new URL(s.icpAnalysis.url).hostname
-                              : "Unknown"}
+                            {(() => {
+                              const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                              return icp ? new URL(icp.url).hostname : "Unknown";
+                            })()}
                           </p>
-                          {s.icpAnalysis?.primaryICP && (
-                            <p className="text-sm text-muted-foreground truncate">
-                              {s.icpAnalysis.primaryICP}
-                            </p>
-                          )}
+                          {(() => {
+                            const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                            return icp?.primaryICP && (
+                              <p className="text-sm text-muted-foreground truncate">
+                                {icp.primaryICP}
+                              </p>
+                            );
+                          })()}
                         </div>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
