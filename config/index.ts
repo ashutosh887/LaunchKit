@@ -1,10 +1,23 @@
-import { LucideIcon, Sparkles, TrendingUp, Users, Settings, MessageSquare, CheckSquare, LayoutDashboard } from "lucide-react";
+import { LucideIcon, Sparkles, TrendingUp, Users, Settings, MessageSquare, CheckSquare, LayoutDashboard, Download, Share2, BarChart3 } from "lucide-react";
 
 type Route = {
   label: string;
   href: string;
   role?: "admin";
   icon: LucideIcon;
+};
+
+type Feature = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  detailedDescription: string;
+};
+
+type Benefit = {
+  icon: LucideIcon;
+  title: string;
+  description: string;
 };
 
 const config = {
@@ -28,6 +41,65 @@ const config = {
     subheading: "Now time to turn that founder energy into revenue.",
     highlightText: "Just 3 clicks and you are all set to land your",
     highlightBold: "FIRST PAYING USER",
+  },
+  social: {
+    twitter: "https://x.com/launchkitapp",
+  },
+  home: {
+    hero: {
+      subtitle: "Get your first paying customer in 48 hours with AI-powered ICP analysis, GTM strategies, and actionable checklists.",
+      cta: {
+        primary: "Get Started",
+        secondary: "Join Waitlist",
+      },
+    },
+    features: {
+      heading: "Everything you need to get your first customer",
+      subheading: "From ICP analysis to execution, we've got you covered",
+      items: [
+        {
+          icon: Sparkles,
+          title: "ICP Auto-Scraper",
+          description: "Analyze websites to understand your ideal customer profile",
+          detailedDescription: "Paste any website URL and get instant insights about your ideal customer.",
+        },
+        {
+          icon: TrendingUp,
+          title: "GTM Strategy Generator",
+          description: "Generate comprehensive go-to-market strategies",
+          detailedDescription: "Get a complete 48-hour launch plan with channels, templates, and metrics.",
+        },
+        {
+          icon: MessageSquare,
+          title: "Messaging Generator",
+          description: "Create high-conversion messaging lines",
+          detailedDescription: "Generate messaging that converts. Headlines, value props, and DM openers ready to use.",
+        },
+        {
+          icon: CheckSquare,
+          title: "Action Checklist",
+          description: "Get actionable checklists to execute your strategy",
+          detailedDescription: "Turn your GTM strategy into actionable tasks. Every task takes ≤30 minutes.",
+        },
+      ] as Feature[],
+      benefits: [
+        {
+          icon: Download,
+          title: "Export Everything",
+          description: "Download ICP analyses, GTM strategies, and checklists as Excel files",
+        },
+        {
+          icon: Share2,
+          title: "Share ICP Cards",
+          description: "Generate shareable ICP summary cards for LinkedIn and Twitter",
+        },
+        {
+          icon: BarChart3,
+          title: "Track Progress",
+          description: "Monitor your ICP analyses, strategies, and generated content in one place",
+        },
+      ] as Benefit[],
+    },
   },
 };
 
