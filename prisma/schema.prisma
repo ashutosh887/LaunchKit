@@ -39,3 +39,13 @@ model User {
 
   @@map("users")
 }
+
+model WaitlistEntry {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  email         String
+  ventureName   String   @map("venture_name")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("waitlist_entries")
+}

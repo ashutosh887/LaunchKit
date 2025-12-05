@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import Image from "next/image";
@@ -30,7 +31,7 @@ export default async function Home() {
       </nav>
 
       <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-4 max-w-xl">
+        <div className="text-center space-y-6 max-w-xl">
           <div className="flex justify-center mb-2">
             <Image
               src="/logo.png"
@@ -47,6 +48,18 @@ export default async function Home() {
           <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
             {config.projectDescription}
           </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+            <SignInButton>
+              <Button className="px-6 py-2">
+                Get Started
+              </Button>
+            </SignInButton>
+            <Link href="/join-waitlist">
+              <Button variant="outline" className="px-6 py-2">
+                Join Waitlist
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     </main>

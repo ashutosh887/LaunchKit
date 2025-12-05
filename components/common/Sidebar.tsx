@@ -12,10 +12,21 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { user } = useUser();
 
+  const userEmail = user?.emailAddresses?.[0]?.emailAddress?.toLowerCase();
+  const isAdmin =
+    userEmail && config.roles.admin.includes(userEmail);
+
+  const filteredRoutes = config.routes.filter((route) => {
+    if (route.role === "admin") {
+      return isAdmin;
+    }
+    return true;
+  });
+
   return (
     <div className="w-64 flex flex-col h-full border-r border-border bg-background/60">
       <div className="flex-1 p-4 flex flex-col gap-1 overflow-auto">
-        {config.routes.map((item) => (
+        {filteredRoutes.map((item) => (
           <Link
             key={item.href}
             href={item.href}
