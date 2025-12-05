@@ -24,8 +24,8 @@ export default function Sidebar() {
   });
 
   return (
-    <div className="w-64 flex flex-col h-full border-r border-border bg-background/60">
-      <div className="flex-1 p-4 flex flex-col gap-1 overflow-auto">
+    <div className="w-64 flex flex-col h-full border-r border-border bg-background/60 shrink-0">
+      <div className="flex-1 p-4 flex flex-col gap-1 overflow-y-auto">
         {filteredRoutes.map((item) => (
           <Link
             key={item.href}

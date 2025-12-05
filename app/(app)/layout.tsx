@@ -15,8 +15,8 @@ export default async function AppLayout({
   if (!userId) redirect("/");
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-background text-foreground">
-      <div className="h-16 w-full flex items-center justify-between px-6 border-b border-border bg-background/80 backdrop-blur shadow-sm">
+    <div className="h-screen w-screen flex flex-col bg-background text-foreground overflow-hidden">
+      <div className="h-16 w-full flex items-center justify-between px-6 border-b border-border bg-background/80 backdrop-blur shadow-sm shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2">
           <Image
             src="/logo.png"
@@ -24,6 +24,7 @@ export default async function AppLayout({
             width={32}
             height={48}
             className="object-contain"
+            priority
           />
         </Link>
 
@@ -32,7 +33,9 @@ export default async function AppLayout({
 
       <div className="flex flex-1 overflow-hidden">
         <Sidebar />
-        <div className="flex-1 p-6 overflow-auto bg-background">{children}</div>
+        <div className="flex-1 overflow-y-auto bg-background">
+          <div className="p-6">{children}</div>
+        </div>
       </div>
     </div>
   );

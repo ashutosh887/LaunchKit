@@ -5,13 +5,18 @@ import { WaitlistTable } from "@/components/waitlist/WaitlistTable";
 import config from "@/config";
 
 async function getWaitlistEntries() {
-  const entries = await prisma.waitlistEntry.findMany({
+  return await prisma.waitlistEntry.findMany({
+    select: {
+      id: true,
+      email: true,
+      ventureName: true,
+      createdAt: true,
+      updatedAt: true,
+    },
     orderBy: {
       createdAt: "desc",
     },
   });
-
-  return entries;
 }
 
 export default async function WaitlistAdminPage() {
@@ -40,7 +45,7 @@ export default async function WaitlistAdminPage() {
         </p>
       </div>
 
-      <div className="border border-border rounded-lg bg-card">
+      <div className="border border-border rounded-lg bg-card overflow-hidden">
         <WaitlistTable data={entries} />
       </div>
     </div>
