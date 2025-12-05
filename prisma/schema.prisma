@@ -49,3 +49,34 @@ model WaitlistEntry {
 
   @@map("waitlist_entries")
 }
+
+model ICPAnalysis {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String?  @map("user_id") @db.ObjectId
+  url               String
+  productDescription String? @map("product_description")
+  targetRegion      String? @map("target_region")
+  status            String   @default("pending") // pending, completed, failed, retrying
+  scrapedContent    Json?    @map("scraped_content")
+  icpResult         Json?    @map("icp_result") // Full ICP analysis result
+  primaryICP        String?  @map("primary_icp")
+  confidenceScore   Float?   @map("confidence_score")
+  errorMessage      String?  @map("error_message")
+  retryCount        Int      @default(0) @map("retry_count")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([status])
+  @@map("icp_analyses")
+}
+
+model Settings {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @unique @map("user_id") @db.ObjectId
+  aiProvider        String   @default("openai") @map("ai_provider") // openai, anthropic
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@map("settings")
+}

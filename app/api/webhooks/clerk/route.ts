@@ -209,12 +209,20 @@ export async function POST(req: Request) {
       });
 
       if (!existingUser) {
-        await prisma.user.create({
+        const newUser = await prisma.user.create({
           data: {
             clerkId: id,
             ...userData,
           },
         });
+
+        await prisma.settings.create({
+          data: {
+            userId: newUser.id,
+            aiProvider: "openai",
+          },
+        });
+
         return new Response("User created successfully", { status: 200 });
       }
 
@@ -230,9 +238,20 @@ export async function POST(req: Request) {
       const { id } = evt.data;
 
       try {
-        await prisma.user.delete({
+        const user = await prisma.user.findUnique({
           where: { clerkId: id },
         });
+
+        if (user) {
+          await prisma.settings.deleteMany({
+            where: { userId: user.id },
+          });
+
+          await prisma.user.delete({
+            where: { clerkId: id },
+          });
+        }
+
         return new Response("User deleted successfully", { status: 200 });
       } catch (error) {
         if (error && typeof error === "object" && "code" in error && error.code === "P2025") {

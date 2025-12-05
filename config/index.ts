@@ -1,17 +1,20 @@
+import { LucideIcon, Sparkles, TrendingUp, Users, Settings } from "lucide-react";
+
 type Route = {
   label: string;
   href: string;
   role?: "admin";
+  icon: LucideIcon;
 };
 
 const config = {
   projectName: "LaunchKit",
   projectDescription: "Ship fast. Get customers faster",
   routes: [
-    { label: "ICP Auto-Scraper", href: "/icp-auto-scraper" },
-    { label: "GTM Strategy Generator", href: "/gtm-strategy-generator" },
-    { label: "Waitlist", href: "/waitlist", role: "admin" as const },
-    { label: "Settings", href: "/settings" },
+    { label: "ICP Auto-Scraper", href: "/icp-auto-scraper", icon: Sparkles },
+    { label: "GTM Strategy Generator", href: "/gtm-strategy-generator", icon: TrendingUp },
+    { label: "Waitlist", href: "/waitlist", role: "admin" as const, icon: Users },
+    { label: "Settings", href: "/settings", icon: Settings },
   ] as Route[],
   roles: {
     admin: ["ashutoshj887@gmail.com", "mansisondhi103@gmail.com"],
