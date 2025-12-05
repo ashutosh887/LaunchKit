@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
 import { z } from "zod";
+import { getOrCreateUser } from "@/lib/user";
 
 const settingsSchema = z.object({
   aiProvider: z.enum(["openai", "anthropic"]),
@@ -16,16 +17,7 @@ export async function GET() {
       });
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: user.id },
-    });
-
-    if (!dbUser) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    const dbUser = await getOrCreateUser();
 
     let settings = await prisma.settings.findUnique({
       where: { userId: dbUser.id },
@@ -47,7 +39,10 @@ export async function GET() {
   } catch (error) {
     console.error("Get settings error:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ 
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
@@ -66,16 +61,7 @@ export async function PATCH(req: Request) {
       });
     }
 
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: user.id },
-    });
-
-    if (!dbUser) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
+    const dbUser = await getOrCreateUser();
 
     const body = await req.json();
     const validatedData = settingsSchema.parse(body);
@@ -123,7 +109,10 @@ export async function PATCH(req: Request) {
 
     console.error("Update settings error:", error);
     return new Response(
-      JSON.stringify({ error: "Internal server error" }),
+      JSON.stringify({ 
+        error: "Internal server error",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },

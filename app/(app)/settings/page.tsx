@@ -34,7 +34,8 @@ export default function SettingsPage() {
       const response = await fetch("/api/settings");
       
       if (!response.ok) {
-        throw new Error("Failed to load settings");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || `Failed to load settings (${response.status})`);
       }
 
       const data = await response.json();
@@ -42,8 +43,11 @@ export default function SettingsPage() {
         const provider = data.settings.aiProvider || "openai";
         setAiProvider(provider);
         setOriginalProvider(provider);
+      } else {
+        throw new Error("No settings data received");
       }
     } catch (err) {
+      console.error("Settings load error:", err);
       setError(err instanceof Error ? err.message : "Failed to load settings");
     } finally {
       setLoading(false);

@@ -228,20 +228,29 @@ async function analyzeWithClaude(
   }
 }
 
-async function getUserAIProvider(userId: string | null): Promise<"openai" | "anthropic"> {
-  if (!userId) {
+async function getUserAIProvider(clerkUserId: string | null): Promise<"openai" | "anthropic"> {
+  if (!clerkUserId) {
     return "openai";
   }
 
   try {
+    const dbUser = await prisma.user.findUnique({
+      where: { clerkId: clerkUserId },
+      select: { id: true },
+    });
+
+    if (!dbUser) {
+      return "openai";
+    }
+
     let settings = await prisma.settings.findUnique({
-      where: { userId },
+      where: { userId: dbUser.id },
     });
 
     if (!settings) {
       settings = await prisma.settings.create({
         data: {
-          userId,
+          userId: dbUser.id,
           aiProvider: "openai",
         },
       });
@@ -257,11 +266,10 @@ async function getUserAIProvider(userId: string | null): Promise<"openai" | "ant
 export async function POST(req: Request) {
   try {
     const user = await currentUser();
-    const userId = user?.id
-      ? await prisma.user
-          .findUnique({ where: { clerkId: user.id } })
-          .then((u) => u?.id || null)
+    const dbUser = user?.id
+      ? await prisma.user.findUnique({ where: { clerkId: user.id } })
       : null;
+    const userId = dbUser?.id || null;
 
     const body = await req.json();
     const validatedData = icpScrapeSchema.parse(body);
@@ -294,7 +302,7 @@ export async function POST(req: Request) {
     try {
       const scrapedContent = await scrapeWebsite(url);
 
-      const aiProvider = await getUserAIProvider(userId);
+      const aiProvider = await getUserAIProvider(user?.id || null);
 
       const icpResult = aiProvider === "openai"
         ? await analyzeWithOpenAI(
@@ -392,11 +400,12 @@ export async function GET(req: Request) {
 
     const dbUser = await prisma.user.findUnique({
       where: { clerkId: user.id },
+      select: { id: true },
     });
 
     if (!dbUser) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
-        status: 404,
+      return new Response(JSON.stringify({ analyses: [] }), {
+        status: 200,
         headers: { "Content-Type": "application/json" },
       });
     }

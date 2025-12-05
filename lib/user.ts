@@ -1,0 +1,88 @@
+import { prisma } from "@/lib/prisma";
+import { currentUser } from "@clerk/nextjs/server";
+
+export async function getOrCreateUser(clerkUserId?: string) {
+  const clerkUser = clerkUserId ? null : await currentUser();
+  const userId = clerkUserId || clerkUser?.id;
+  
+  if (!userId) {
+    throw new Error("No user ID provided");
+  }
+
+  let dbUser = await prisma.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  if (dbUser) {
+    return dbUser;
+  }
+
+  if (!clerkUser) {
+    throw new Error("User not found and cannot create without Clerk user data");
+  }
+
+  const email = clerkUser.emailAddresses?.[0]?.emailAddress || "";
+  
+  if (email) {
+    dbUser = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (dbUser) {
+      if (dbUser.clerkId !== userId) {
+        dbUser = await prisma.user.update({
+          where: { id: dbUser.id },
+          data: { clerkId: userId },
+        });
+      }
+      return dbUser;
+    }
+  }
+
+  try {
+    dbUser = await prisma.user.create({
+      data: {
+        clerkId: userId,
+        email: email,
+        firstName: clerkUser.firstName || null,
+        lastName: clerkUser.lastName || null,
+        fullName: clerkUser.firstName && clerkUser.lastName 
+          ? `${clerkUser.firstName} ${clerkUser.lastName}` 
+          : clerkUser.firstName || clerkUser.lastName || null,
+        imageUrl: clerkUser.imageUrl || null,
+        username: clerkUser.username || null,
+      },
+    });
+    return dbUser;
+  } catch (createError: any) {
+    if (createError.code === "P2002") {
+      if (email) {
+        dbUser = await prisma.user.findUnique({
+          where: { email },
+        });
+        if (dbUser) {
+          if (dbUser.clerkId !== userId) {
+            dbUser = await prisma.user.update({
+              where: { id: dbUser.id },
+              data: { clerkId: userId },
+            });
+          }
+          return dbUser;
+        }
+      }
+      const existingByClerkId = await prisma.user.findUnique({
+        where: { clerkId: userId },
+      });
+      if (existingByClerkId) {
+        return existingByClerkId;
+      }
+    }
+    throw createError;
+  }
+}
+
+export async function getUserByClerkId(clerkId: string) {
+  return await prisma.user.findUnique({
+    where: { clerkId },
+  });
+}

@@ -642,17 +642,6 @@ export default function ICPAutoScraperPage() {
                       </Button>
                     </div>
                   ))}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full mt-2"
-                    onClick={() => {
-                      localStorage.removeItem("launchkit_icp_history");
-                      setLocalHistory([]);
-                    }}
-                  >
-                    Clear Local History
-                  </Button>
                 </div>
               )}
             </div>
