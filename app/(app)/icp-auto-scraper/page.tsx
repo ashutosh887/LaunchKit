@@ -221,7 +221,12 @@ export default function ICPAutoScraperPage() {
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   };
 
-  const allHistory = [...history, ...localHistory.filter(h => !history.find(ah => ah.id === h.id))];
+  const allHistory = [...history, ...localHistory.filter(h => !history.find(ah => ah.id === h.id))]
+    .sort((a, b) => {
+      const dateA = new Date(a.updatedAt || a.createdAt).getTime();
+      const dateB = new Date(b.updatedAt || b.createdAt).getTime();
+      return dateB - dateA;
+    });
 
   return (
     <div className="w-full">
