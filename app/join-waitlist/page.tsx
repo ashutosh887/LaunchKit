@@ -209,7 +209,7 @@ export default function WaitlistPage() {
                     className="w-full h-9 sm:h-10 text-xs sm:text-sm font-medium"
                     onClick={handleReferClick}
                   >
-                    I Know Someone Who'll Love This 👇
+                    I Know Someone Who&apos;ll Love This 👇
                   </Button>
                 </div>
 

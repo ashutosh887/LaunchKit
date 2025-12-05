@@ -2,6 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import config from "@/config";
 
 export async function GET() {
@@ -77,7 +78,6 @@ export async function POST(req: Request) {
       two_factor_enabled,
       totp_enabled,
       backup_code_enabled,
-      email_addresses: emailAddressesArray,
       organization_memberships,
     } = data;
 
@@ -98,11 +98,11 @@ export async function POST(req: Request) {
         : first_name || last_name || null,
       imageUrl: image_url || null,
       username: username || null,
-      phoneNumbers: phone_numbers || null,
-      emailAddresses: email_addresses || null,
-      publicMetadata: public_metadata || null,
-      privateMetadata: private_metadata || null,
-      unsafeMetadata: unsafe_metadata || null,
+      phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
+      emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
+      publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
+      privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
+      unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
       externalId: external_id || null,
       lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
       passwordEnabled: password_enabled || false,
@@ -111,7 +111,7 @@ export async function POST(req: Request) {
       backupCodeEnabled: backup_code_enabled || false,
       emailVerified: emailVerified || false,
       phoneVerified: phoneVerified || false,
-      organizationMemberships: organization_memberships || null,
+      organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
       role: role,
     };
 
@@ -193,11 +193,11 @@ export async function POST(req: Request) {
         : first_name || last_name || null,
       imageUrl: image_url || null,
       username: username || null,
-      phoneNumbers: phone_numbers || null,
-      emailAddresses: email_addresses || null,
-      publicMetadata: public_metadata || null,
-      privateMetadata: private_metadata || null,
-      unsafeMetadata: unsafe_metadata || null,
+      phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
+      emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
+      publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
+      privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
+      unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
       externalId: external_id || null,
       lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
       passwordEnabled: password_enabled || false,
@@ -206,7 +206,7 @@ export async function POST(req: Request) {
       backupCodeEnabled: backup_code_enabled || false,
       emailVerified: emailVerified || false,
       phoneVerified: phoneVerified || false,
-      organizationMemberships: organization_memberships || null,
+      organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
       role: role,
     };
 
