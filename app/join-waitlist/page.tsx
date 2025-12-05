@@ -44,19 +44,14 @@ export default function WaitlistPage() {
     setSubmitStatus(null);
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
       const response = await fetch("/api/waitlist", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-        signal: controller.signal,
       });
 
-      clearTimeout(timeoutId);
       const result = await response.json();
 
       if (!response.ok) {
@@ -69,18 +64,11 @@ export default function WaitlistPage() {
       });
       form.reset();
     } catch (error) {
-      if (error instanceof Error && error.name === "AbortError") {
-        setSubmitStatus({
-          type: "error",
-          message: "Request timed out. Please try again.",
-        });
-      } else {
-        setSubmitStatus({
-          type: "error",
-          message:
-            error instanceof Error ? error.message : "Something went wrong",
-        });
-      }
+      setSubmitStatus({
+        type: "error",
+        message:
+          error instanceof Error ? error.message : "Something went wrong",
+      });
     } finally {
       setIsSubmitting(false);
     }
