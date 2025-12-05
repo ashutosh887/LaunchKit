@@ -30,13 +30,13 @@ export default async function Home() {
       </nav>
 
       <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-6 max-w-xl">
-          <div className="flex justify-center">
+        <div className="text-center space-y-4 max-w-xl">
+          <div className="flex justify-center mb-2">
             <Image
               src="/logo.png"
               alt={`${config.projectName} Logo`}
-              width={120}
-              height={120}
+              width={100}
+              height={150}
               className="object-contain"
               priority
             />
