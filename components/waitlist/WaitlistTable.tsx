@@ -187,11 +187,11 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
         )}
       </div>
 
-      <div className="rounded-md border border-border">
+      <div className="rounded-md border border-border/30 bg-card overflow-hidden">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-muted/20">
                 {headerGroup.headers.map((header) => (
                   <TableHead key={header.id}>
                     {header.isPlaceholder
@@ -211,7 +211,7 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={row.getIsSelected() ? "bg-muted/50" : ""}
+                  className={row.getIsSelected() ? "bg-accent/30" : ""}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
