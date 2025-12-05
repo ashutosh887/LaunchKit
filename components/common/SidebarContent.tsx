@@ -17,7 +17,7 @@ export function SidebarContent({ isAdmin }: SidebarContentProps) {
   const { user } = useUser();
 
   const filteredRoutes = config.routes.filter((route) => {
-    if (route.href === "/settings") {
+    if (route.href === "/settings" || route.href === "/dashboard") {
       return false;
     }
     if (route.role === "admin") {

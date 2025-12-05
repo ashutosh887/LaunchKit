@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { AdminGuard } from "@/components/auth/AdminGuard";
 import { WaitlistContent } from "@/components/waitlist/WaitlistContent";
+import { WaitlistLoading } from "@/components/waitlist/WaitlistLoading";
 import { PageHeader } from "@/components/common/PageHeader";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 
 export default async function WaitlistAdminPage() {
   return (
@@ -13,11 +13,7 @@ export default async function WaitlistAdminPage() {
             href="/waitlist"
             description="View all waitlist signups and manage entries"
           />
-          <div className="border border-border/30 rounded-lg bg-card p-12">
-            <div className="flex items-center justify-center">
-              <LoadingSpinner />
-            </div>
-          </div>
+          <WaitlistLoading />
         </div>
       }
     >
@@ -28,15 +24,7 @@ export default async function WaitlistAdminPage() {
             description="View all waitlist signups and manage entries"
           />
 
-          <Suspense
-            fallback={
-              <div className="border border-border/30 rounded-lg bg-card p-12">
-                <div className="flex items-center justify-center">
-                  <LoadingSpinner message="Loading waitlist..." />
-                </div>
-              </div>
-            }
-          >
+          <Suspense fallback={<WaitlistLoading />}>
             <WaitlistContent />
           </Suspense>
         </div>

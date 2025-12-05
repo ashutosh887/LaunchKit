@@ -6,6 +6,7 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         href="/dashboard"
+        title="Dashboard"
         description="Overview of your account and activity"
       />
       <ComingSoon message="We're working on bringing you an amazing dashboard experience." />

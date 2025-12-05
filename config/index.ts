@@ -8,10 +8,9 @@ const config = {
   projectName: "LaunchKit",
   projectDescription: "Ship fast. Get customers faster",
   routes: [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "Waitlist", href: "/waitlist", role: "admin" as const },
     { label: "ICP Auto-Scraper", href: "/icp-auto-scraper" },
     { label: "GTM Strategy Generator", href: "/gtm-strategy-generator" },
+    { label: "Waitlist", href: "/waitlist", role: "admin" as const },
     { label: "Settings", href: "/settings" },
   ] as Route[],
   roles: {
