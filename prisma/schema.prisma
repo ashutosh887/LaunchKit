@@ -11,16 +11,31 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  clerkId   String   @unique @map("clerk_id")
-  email     String   @unique
-  firstName String?  @map("first_name")
-  lastName  String?  @map("last_name")
-  fullName  String?  @map("full_name")
-  imageUrl  String?  @map("image_url")
-  role      String?  @default("user")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id                    String    @id @default(auto()) @map("_id") @db.ObjectId
+  clerkId               String    @unique @map("clerk_id")
+  email                 String    @unique
+  firstName             String?   @map("first_name")
+  lastName              String?   @map("last_name")
+  fullName              String?   @map("full_name")
+  imageUrl              String?   @map("image_url")
+  username              String?   @map("username")
+  phoneNumbers          Json?     @map("phone_numbers")
+  emailAddresses        Json?     @map("email_addresses")
+  publicMetadata        Json?     @map("public_metadata")
+  privateMetadata       Json?     @map("private_metadata")
+  unsafeMetadata        Json?     @map("unsafe_metadata")
+  externalId            String?   @map("external_id")
+  lastSignInAt          DateTime? @map("last_sign_in_at")
+  passwordEnabled       Boolean?  @default(false) @map("password_enabled")
+  twoFactorEnabled      Boolean?  @default(false) @map("two_factor_enabled")
+  totpEnabled           Boolean?  @default(false) @map("totp_enabled")
+  backupCodeEnabled     Boolean?  @default(false) @map("backup_code_enabled")
+  emailVerified         Boolean?  @default(false) @map("email_verified")
+  phoneVerified         Boolean?  @default(false) @map("phone_verified")
+  organizationMemberships Json?   @map("organization_memberships")
+  role                  String?   @default("user")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  updatedAt             DateTime  @updatedAt @map("updated_at")
 
   @@map("users")
 }

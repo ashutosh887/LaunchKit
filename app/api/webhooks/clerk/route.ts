@@ -2,6 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import config from "@/config";
 
 export async function GET() {
   return new Response(
@@ -58,21 +59,61 @@ export async function POST(req: Request) {
   const eventType = evt.type;
 
   if (eventType === "user.created") {
-    const { 
-      id, 
-      email_addresses, 
-      first_name, 
-      last_name, 
+    const data = evt.data;
+    const {
+      id,
+      email_addresses,
+      first_name,
+      last_name,
       image_url,
+      username,
+      phone_numbers,
       public_metadata,
-      organization_memberships 
-    } = evt.data;
+      private_metadata,
+      unsafe_metadata,
+      external_id,
+      last_sign_in_at,
+      password_enabled,
+      two_factor_enabled,
+      totp_enabled,
+      backup_code_enabled,
+      email_addresses: emailAddressesArray,
+      organization_memberships,
+    } = data;
 
-    const email = email_addresses[0]?.email_address || "";
-    const role = 
-      (public_metadata as { role?: string })?.role || 
-      (organization_memberships?.[0]?.role as string) || 
-      "user";
+    const email = email_addresses?.[0]?.email_address || "";
+    const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
+    const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
+    const role = config.roles.admin.includes(email)
+      ? "admin"
+      : config.roles.default;
+
+    const userData = {
+      clerkId: id,
+      email: email,
+      firstName: first_name || null,
+      lastName: last_name || null,
+      fullName: first_name && last_name
+        ? `${first_name} ${last_name}`
+        : first_name || last_name || null,
+      imageUrl: image_url || null,
+      username: username || null,
+      phoneNumbers: phone_numbers || null,
+      emailAddresses: email_addresses || null,
+      publicMetadata: public_metadata || null,
+      privateMetadata: private_metadata || null,
+      unsafeMetadata: unsafe_metadata || null,
+      externalId: external_id || null,
+      lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
+      passwordEnabled: password_enabled || false,
+      twoFactorEnabled: two_factor_enabled || false,
+      totpEnabled: totp_enabled || false,
+      backupCodeEnabled: backup_code_enabled || false,
+      emailVerified: emailVerified || false,
+      phoneVerified: phoneVerified || false,
+      organizationMemberships: organization_memberships || null,
+      role: role,
+    };
 
     try {
       if (email) {
@@ -84,19 +125,10 @@ export async function POST(req: Request) {
           if (existingByEmail.clerkId === id) {
             return new Response("User already exists", { status: 200 });
           }
-          
+
           await prisma.user.update({
             where: { email },
-            data: {
-              clerkId: id,
-              firstName: first_name || existingByEmail.firstName,
-              lastName: last_name || existingByEmail.lastName,
-              fullName: first_name && last_name 
-                ? `${first_name} ${last_name}` 
-                : existingByEmail.fullName,
-              imageUrl: image_url || existingByEmail.imageUrl,
-              role: role,
-            },
+            data: userData,
           });
           return new Response("User updated", { status: 200 });
         }
@@ -111,17 +143,7 @@ export async function POST(req: Request) {
       }
 
       await prisma.user.create({
-        data: {
-          clerkId: id,
-          email: email,
-          firstName: first_name || null,
-          lastName: last_name || null,
-          fullName: first_name && last_name 
-            ? `${first_name} ${last_name}` 
-            : first_name || last_name || null,
-          imageUrl: image_url || null,
-          role: role,
-        },
+        data: userData,
       });
 
       return new Response("User created successfully", { status: 200 });
@@ -134,20 +156,59 @@ export async function POST(req: Request) {
   }
 
   if (eventType === "user.updated") {
-    const { 
-      id, 
-      email_addresses, 
-      first_name, 
-      last_name, 
+    const data = evt.data;
+    const {
+      id,
+      email_addresses,
+      first_name,
+      last_name,
       image_url,
+      username,
+      phone_numbers,
       public_metadata,
-      organization_memberships 
-    } = evt.data;
+      private_metadata,
+      unsafe_metadata,
+      external_id,
+      last_sign_in_at,
+      password_enabled,
+      two_factor_enabled,
+      totp_enabled,
+      backup_code_enabled,
+      organization_memberships,
+    } = data;
 
-    const role = 
-      (public_metadata as { role?: string })?.role || 
-      (organization_memberships?.[0]?.role as string) || 
-      "user";
+    const email = email_addresses?.[0]?.email_address || "";
+    const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
+    const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
+    const role = config.roles.admin.includes(email)
+      ? "admin"
+      : config.roles.default;
+
+    const userData = {
+      email: email,
+      firstName: first_name || null,
+      lastName: last_name || null,
+      fullName: first_name && last_name
+        ? `${first_name} ${last_name}`
+        : first_name || last_name || null,
+      imageUrl: image_url || null,
+      username: username || null,
+      phoneNumbers: phone_numbers || null,
+      emailAddresses: email_addresses || null,
+      publicMetadata: public_metadata || null,
+      privateMetadata: private_metadata || null,
+      unsafeMetadata: unsafe_metadata || null,
+      externalId: external_id || null,
+      lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
+      passwordEnabled: password_enabled || false,
+      twoFactorEnabled: two_factor_enabled || false,
+      totpEnabled: totp_enabled || false,
+      backupCodeEnabled: backup_code_enabled || false,
+      emailVerified: emailVerified || false,
+      phoneVerified: phoneVerified || false,
+      organizationMemberships: organization_memberships || null,
+      role: role,
+    };
 
     try {
       const existingUser = await prisma.user.findUnique({
@@ -158,14 +219,7 @@ export async function POST(req: Request) {
         await prisma.user.create({
           data: {
             clerkId: id,
-            email: email_addresses[0]?.email_address || "",
-            firstName: first_name || null,
-            lastName: last_name || null,
-            fullName: first_name && last_name 
-              ? `${first_name} ${last_name}` 
-              : first_name || last_name || null,
-            imageUrl: image_url || null,
-            role: role,
+            ...userData,
           },
         });
         return new Response("User created successfully", { status: 200 });
@@ -173,16 +227,7 @@ export async function POST(req: Request) {
 
       await prisma.user.update({
         where: { clerkId: id },
-        data: {
-          email: email_addresses[0]?.email_address || "",
-          firstName: first_name || null,
-          lastName: last_name || null,
-          fullName: first_name && last_name 
-            ? `${first_name} ${last_name}` 
-            : first_name || last_name || null,
-          imageUrl: image_url || null,
-          role: role,
-        },
+        data: userData,
       });
 
       return new Response("User updated successfully", { status: 200 });
