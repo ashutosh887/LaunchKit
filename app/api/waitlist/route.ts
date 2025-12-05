@@ -44,6 +44,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (error && typeof error === "object" && "message" in error) {
+      const errorMessage = String(error.message);
+      if (errorMessage.includes("MONGODB_URI") || errorMessage.includes("connection")) {
+        return NextResponse.json(
+          { error: "Database connection failed. Please check configuration." },
+          { status: 500 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }

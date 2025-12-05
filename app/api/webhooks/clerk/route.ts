@@ -59,63 +59,63 @@ export async function POST(req: Request) {
 
   const eventType = evt.type;
 
-  if (eventType === "user.created") {
-    const data = evt.data;
-    const {
-      id,
-      email_addresses,
-      first_name,
-      last_name,
-      image_url,
-      username,
-      phone_numbers,
-      public_metadata,
-      private_metadata,
-      unsafe_metadata,
-      external_id,
-      last_sign_in_at,
-      password_enabled,
-      two_factor_enabled,
-      totp_enabled,
-      backup_code_enabled,
-      organization_memberships,
-    } = data;
+  try {
+    if (eventType === "user.created") {
+      const data = evt.data;
+      const {
+        id,
+        email_addresses,
+        first_name,
+        last_name,
+        image_url,
+        username,
+        phone_numbers,
+        public_metadata,
+        private_metadata,
+        unsafe_metadata,
+        external_id,
+        last_sign_in_at,
+        password_enabled,
+        two_factor_enabled,
+        totp_enabled,
+        backup_code_enabled,
+        organization_memberships,
+      } = data;
 
-    const email = email_addresses?.[0]?.email_address || "";
-    const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
-    const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
-    const role = config.roles.admin.includes(email)
-      ? "admin"
-      : config.roles.default;
+      const email = email_addresses?.[0]?.email_address || "";
+      const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
+      const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
+      const role = config.roles.admin.includes(email)
+        ? "admin"
+        : config.roles.default;
 
-    const userData = {
-      clerkId: id,
-      email: email,
-      firstName: first_name || null,
-      lastName: last_name || null,
-      fullName: first_name && last_name
-        ? `${first_name} ${last_name}`
-        : first_name || last_name || null,
-      imageUrl: image_url || null,
-      username: username || null,
-      phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
-      emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
-      publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
-      privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
-      unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
-      externalId: external_id || null,
-      lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
-      passwordEnabled: password_enabled || false,
-      twoFactorEnabled: two_factor_enabled || false,
-      totpEnabled: totp_enabled || false,
-      backupCodeEnabled: backup_code_enabled || false,
-      emailVerified: emailVerified || false,
-      phoneVerified: phoneVerified || false,
-      organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
-      role: role,
-    };
+      const userData = {
+        clerkId: id,
+        email: email,
+        firstName: first_name || null,
+        lastName: last_name || null,
+        fullName: first_name && last_name
+          ? `${first_name} ${last_name}`
+          : first_name || last_name || null,
+        imageUrl: image_url || null,
+        username: username || null,
+        phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
+        emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
+        publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
+        privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
+        unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
+        externalId: external_id || null,
+        lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
+        passwordEnabled: password_enabled || false,
+        twoFactorEnabled: two_factor_enabled || false,
+        totpEnabled: totp_enabled || false,
+        backupCodeEnabled: backup_code_enabled || false,
+        emailVerified: emailVerified || false,
+        phoneVerified: phoneVerified || false,
+        organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
+        role: role,
+      };
 
-    try {
       if (email) {
         const existingByEmail = await prisma.user.findUnique({
           where: { email },
@@ -147,70 +147,63 @@ export async function POST(req: Request) {
       });
 
       return new Response("User created successfully", { status: 200 });
-    } catch (error) {
-      if (error && typeof error === "object" && "code" in error && error.code === "P2002") {
-        return new Response("User already exists", { status: 200 });
-      }
-      return new Response("Error creating user", { status: 500 });
     }
-  }
 
-  if (eventType === "user.updated") {
-    const data = evt.data;
-    const {
-      id,
-      email_addresses,
-      first_name,
-      last_name,
-      image_url,
-      username,
-      phone_numbers,
-      public_metadata,
-      private_metadata,
-      unsafe_metadata,
-      external_id,
-      last_sign_in_at,
-      password_enabled,
-      two_factor_enabled,
-      totp_enabled,
-      backup_code_enabled,
-      organization_memberships,
-    } = data;
+    if (eventType === "user.updated") {
+      const data = evt.data;
+      const {
+        id,
+        email_addresses,
+        first_name,
+        last_name,
+        image_url,
+        username,
+        phone_numbers,
+        public_metadata,
+        private_metadata,
+        unsafe_metadata,
+        external_id,
+        last_sign_in_at,
+        password_enabled,
+        two_factor_enabled,
+        totp_enabled,
+        backup_code_enabled,
+        organization_memberships,
+      } = data;
 
-    const email = email_addresses?.[0]?.email_address || "";
-    const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
-    const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
-    const role = config.roles.admin.includes(email)
-      ? "admin"
-      : config.roles.default;
+      const email = email_addresses?.[0]?.email_address || "";
+      const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
+      const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
+      const role = config.roles.admin.includes(email)
+        ? "admin"
+        : config.roles.default;
 
-    const userData = {
-      email: email,
-      firstName: first_name || null,
-      lastName: last_name || null,
-      fullName: first_name && last_name
-        ? `${first_name} ${last_name}`
-        : first_name || last_name || null,
-      imageUrl: image_url || null,
-      username: username || null,
-      phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
-      emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
-      publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
-      privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
-      unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
-      externalId: external_id || null,
-      lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
-      passwordEnabled: password_enabled || false,
-      twoFactorEnabled: two_factor_enabled || false,
-      totpEnabled: totp_enabled || false,
-      backupCodeEnabled: backup_code_enabled || false,
-      emailVerified: emailVerified || false,
-      phoneVerified: phoneVerified || false,
-      organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
-      role: role,
-    };
+      const userData = {
+        email: email,
+        firstName: first_name || null,
+        lastName: last_name || null,
+        fullName: first_name && last_name
+          ? `${first_name} ${last_name}`
+          : first_name || last_name || null,
+        imageUrl: image_url || null,
+        username: username || null,
+        phoneNumbers: (phone_numbers ? (phone_numbers as unknown as Prisma.InputJsonValue) : null),
+        emailAddresses: (email_addresses ? (email_addresses as unknown as Prisma.InputJsonValue) : null),
+        publicMetadata: (public_metadata ? (public_metadata as unknown as Prisma.InputJsonValue) : null),
+        privateMetadata: (private_metadata ? (private_metadata as unknown as Prisma.InputJsonValue) : null),
+        unsafeMetadata: (unsafe_metadata ? (unsafe_metadata as unknown as Prisma.InputJsonValue) : null),
+        externalId: external_id || null,
+        lastSignInAt: last_sign_in_at ? new Date(last_sign_in_at) : null,
+        passwordEnabled: password_enabled || false,
+        twoFactorEnabled: two_factor_enabled || false,
+        totpEnabled: totp_enabled || false,
+        backupCodeEnabled: backup_code_enabled || false,
+        emailVerified: emailVerified || false,
+        phoneVerified: phoneVerified || false,
+        organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
+        role: role,
+      };
 
-    try {
       const existingUser = await prisma.user.findUnique({
         where: { clerkId: id },
       });
@@ -231,27 +224,33 @@ export async function POST(req: Request) {
       });
 
       return new Response("User updated successfully", { status: 200 });
-    } catch {
-      return new Response("Error updating user", { status: 500 });
     }
-  }
 
-  if (eventType === "user.deleted") {
-    const { id } = evt.data;
+    if (eventType === "user.deleted") {
+      const { id } = evt.data;
 
-    try {
-      await prisma.user.delete({
-        where: { clerkId: id },
-      });
-      return new Response("User deleted successfully", { status: 200 });
-    } catch (error) {
-      if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
-        return new Response("User not found", { status: 200 });
+      try {
+        await prisma.user.delete({
+          where: { clerkId: id },
+        });
+        return new Response("User deleted successfully", { status: 200 });
+      } catch (error) {
+        if (error && typeof error === "object" && "code" in error && error.code === "P2025") {
+          return new Response("User not found", { status: 200 });
+        }
       }
-      return new Response("Error deleting user", { status: 500 });
+    }
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error) {
+      if (error.code === "P2002") {
+        return new Response("User already exists", { status: 200 });
+      }
+      if (error.code === "P2025") {
+        return new Response("Resource not found", { status: 200 });
+      }
     }
   }
 
-  return new Response("", { status: 200 });
+  return new Response(`Event ${eventType} acknowledged`, { status: 200 });
 }
 
