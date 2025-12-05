@@ -55,6 +55,7 @@ interface Analysis {
   createdAt: string;
   updatedAt: string;
   icpResult?: ICPResult;
+  errorMessage?: string | null;
 }
 
 export default function ICPAutoScraperPage() {
@@ -73,7 +74,8 @@ export default function ICPAutoScraperPage() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setLocalHistory(parsed.slice(0, 10));
+        const filtered = parsed.filter((item: Analysis) => item.status === "completed");
+        setLocalHistory(filtered.slice(0, 10));
       } catch (e) {
         console.error("Failed to parse local history", e);
       }
@@ -96,12 +98,29 @@ export default function ICPAutoScraperPage() {
     }
   };
 
-  const validateUrl = (urlString: string): boolean => {
-    if (!urlString.trim()) return false;
+  const normalizeUrl = (urlString: string): string => {
+    if (!urlString.trim()) return urlString;
     let normalized = urlString.trim();
+    
     if (!normalized.startsWith("http://") && !normalized.startsWith("https://")) {
       normalized = `https://${normalized}`;
     }
+    
+    try {
+      const urlObj = new URL(normalized);
+      if (!urlObj.hostname.startsWith("www.")) {
+        urlObj.hostname = `www.${urlObj.hostname}`;
+        normalized = urlObj.toString();
+      }
+      return normalized;
+    } catch {
+      return normalized;
+    }
+  };
+
+  const validateUrl = (urlString: string): boolean => {
+    if (!urlString.trim()) return false;
+    const normalized = normalizeUrl(urlString);
     try {
       const urlObj = new URL(normalized);
       return urlObj.hostname.includes(".") && !urlString.includes(" ");
@@ -127,6 +146,7 @@ export default function ICPAutoScraperPage() {
       return;
     }
 
+    const normalizedUrl = normalizeUrl(url);
     setLoading(true);
 
     try {
@@ -134,7 +154,7 @@ export default function ICPAutoScraperPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          url: url.trim(),
+          url: normalizedUrl,
           productDescription: productDescription.trim() || undefined,
           targetRegion: targetRegion.trim() || undefined,
         }),
@@ -148,14 +168,16 @@ export default function ICPAutoScraperPage() {
 
       if (data.success && data.analysis) {
         const fullAnalysis = await fetchAnalysis(data.analysis.id);
-        if (fullAnalysis) {
+        if (fullAnalysis && fullAnalysis.status === "completed") {
           setResult(fullAnalysis);
-          const newHistory = [fullAnalysis, ...localHistory].slice(0, 10);
+          const newHistory = [fullAnalysis, ...localHistory.filter(h => h.status === "completed")].slice(0, 10);
           setLocalHistory(newHistory);
           localStorage.setItem("launchkit_icp_history", JSON.stringify(newHistory));
           setTimeout(() => {
             document.getElementById("icp-result")?.scrollIntoView({ behavior: "smooth" });
           }, 100);
+        } else if (fullAnalysis && fullAnalysis.status === "failed") {
+          throw new Error(fullAnalysis.errorMessage || "Analysis failed");
         }
       } else {
         throw new Error("Unexpected response format");

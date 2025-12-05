@@ -267,8 +267,18 @@ export async function POST(req: Request) {
     const validatedData = icpScrapeSchema.parse(body);
 
     let url = validatedData.url.trim();
+    
     if (!url.startsWith("http://") && !url.startsWith("https://")) {
       url = `https://${url}`;
+    }
+    
+    try {
+      const urlObj = new URL(url);
+      if (!urlObj.hostname.startsWith("www.")) {
+        urlObj.hostname = `www.${urlObj.hostname}`;
+        url = urlObj.toString();
+      }
+    } catch {
     }
 
     const analysis = await prisma.iCPAnalysis.create({
@@ -395,7 +405,10 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "10");
 
     const analyses = await prisma.iCPAnalysis.findMany({
-      where: { userId: dbUser.id },
+      where: { 
+        userId: dbUser.id,
+        status: "completed",
+      },
       orderBy: { createdAt: "desc" },
       take: limit,
       select: {
