@@ -140,6 +140,7 @@ export default function ICPAutoScraperPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setResult(null);
 
     if (!validateUrl(url)) {
       setError("Please enter a valid URL");
@@ -401,13 +402,13 @@ export default function ICPAutoScraperPage() {
             </form>
           </div>
 
-          {loading && !result && (
+          {loading && (
             <div className="flex items-center justify-center min-h-[400px]">
               <LoadingSpinner message="Thinking about your customer..." />
             </div>
           )}
 
-          {result && result.icpResult && (
+          {!loading && result && result.icpResult && (
             <Card id="icp-result" className="border-2">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

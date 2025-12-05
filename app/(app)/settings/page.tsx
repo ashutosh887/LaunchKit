@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { SettingsSkeleton } from "@/components/settings/SettingsSkeleton";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -85,18 +86,6 @@ export default function SettingsPage() {
 
   const hasChanged = aiProvider !== originalProvider;
 
-  if (loading) {
-    return (
-      <div className="w-full">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <LoadingSpinner message="Loading settings..." />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
@@ -108,54 +97,57 @@ export default function SettingsPage() {
             </p>
           </div>
 
-          <div className="space-y-5">
-            <div className="space-y-2">
-              <Label htmlFor="ai-provider" className="text-base font-semibold">
-                AI Provider
-              </Label>
-              <div className="flex items-center gap-3">
-                <Select
-                  value={aiProvider}
-                  onValueChange={(value) => setAiProvider(value as AIProvider)}
-                >
-                  <SelectTrigger id="ai-provider" className="flex-1 h-11 text-base">
-                    <SelectValue placeholder="Select AI provider" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="openai">OpenAI</SelectItem>
-                    <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button
-                  onClick={handleSave}
-                  disabled={saving || !hasChanged}
-                  className="h-11 text-sm font-medium"
-                  size="default"
-                >
-                  {saving ? (
-                    <>
-                      <LoadingSpinner size="sm" message="" className="mr-2" />
-                      Saving...
-                    </>
-                  ) : saved ? (
-                    <>
-                      <CheckCircle2 className="h-4 w-4 mr-2" />
-                      Saved!
-                    </>
-                  ) : (
-                    <>
-                      <Save className="h-4 w-4 mr-2" />
-                      Save Model Preference
-                    </>
-                  )}
-                </Button>
+          {loading ? (
+            <SettingsSkeleton />
+          ) : (
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="ai-provider" className="text-base font-semibold">
+                  AI Provider
+                </Label>
+                <div className="flex items-center gap-3">
+                  <Select
+                    value={aiProvider}
+                    onValueChange={(value) => setAiProvider(value as AIProvider)}
+                  >
+                    <SelectTrigger id="ai-provider" className="flex-1 h-11 text-base">
+                      <SelectValue placeholder="Select AI provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="openai">OpenAI</SelectItem>
+                      <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    onClick={handleSave}
+                    disabled={saving || !hasChanged}
+                    className="h-11 text-sm font-medium"
+                    size="default"
+                  >
+                    {saving ? (
+                      <>
+                        <LoadingSpinner size="sm" message="" className="mr-2" />
+                        Saving...
+                      </>
+                    ) : saved ? (
+                      <>
+                        <CheckCircle2 className="h-4 w-4 mr-2" />
+                        Saved!
+                      </>
+                    ) : (
+                      <>
+                        <Save className="h-4 w-4 mr-2" />
+                        Save Model Preference
+                      </>
+                    )}
+                  </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {aiProvider === "openai"
+                    ? "Uses OpenAI's GPT models for AI-powered features"
+                    : "Uses Anthropic's Claude models for AI-powered features"}
+                </p>
               </div>
-              <p className="text-sm text-muted-foreground">
-                {aiProvider === "openai"
-                  ? "Uses OpenAI's GPT models for AI-powered features"
-                  : "Uses Anthropic's Claude models for AI-powered features"}
-              </p>
-            </div>
 
             {error && (
               <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
@@ -167,13 +159,14 @@ export default function SettingsPage() {
               </div>
             )}
 
-            {saved && !error && (
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 text-primary">
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <p className="text-sm font-medium">Model preference saved successfully</p>
-              </div>
-            )}
-          </div>
+              {saved && !error && (
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <p className="text-sm font-medium">Model preference saved successfully</p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
