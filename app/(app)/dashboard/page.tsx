@@ -1,12 +1,14 @@
+import { PageHeader } from "@/components/common/PageHeader";
+import { ComingSoon } from "@/components/common/ComingSoon";
+
 export default function DashboardPage() {
   return (
-    <main className="h-full flex items-center justify-center">
-      <div className="text-center space-y-4 max-w-xl">
-        <h1 className="text-xl sm:text-2xl font-semibold tracking-tight text-primary">
-          Dashboard Page
-        </h1>
-        <p>Welcome to your dashboard!</p>
-      </div>
-    </main>
+    <div className="space-y-6">
+      <PageHeader
+        href="/dashboard"
+        description="Overview of your account and activity"
+      />
+      <ComingSoon message="We're working on bringing you an amazing dashboard experience." />
+    </div>
   );
 }

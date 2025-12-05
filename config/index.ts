@@ -10,6 +10,8 @@ const config = {
   routes: [
     { label: "Dashboard", href: "/dashboard" },
     { label: "Waitlist", href: "/waitlist", role: "admin" as const },
+    { label: "ICP Auto-Scraper", href: "/icp-auto-scraper" },
+    { label: "GTM Strategy Generator", href: "/gtm-strategy-generator" },
     { label: "Settings", href: "/settings" },
   ] as Route[],
   roles: {
