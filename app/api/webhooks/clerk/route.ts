@@ -85,7 +85,8 @@ export async function POST(req: Request) {
       const email = email_addresses?.[0]?.email_address || "";
       const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
       const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
-      const role = config.roles.admin.includes(email)
+      const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
+      const role = adminEmails.includes(email.toLowerCase())
         ? "admin"
         : config.roles.default;
 
@@ -174,7 +175,8 @@ export async function POST(req: Request) {
       const email = email_addresses?.[0]?.email_address || "";
       const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
       const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
-      const role = config.roles.admin.includes(email)
+      const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
+      const role = adminEmails.includes(email.toLowerCase())
         ? "admin"
         : config.roles.default;
 

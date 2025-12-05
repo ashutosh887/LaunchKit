@@ -125,7 +125,7 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
     },
     initialState: {
       pagination: {
-        pageSize: 10,
+        pageSize: 100,
       },
     },
   });
