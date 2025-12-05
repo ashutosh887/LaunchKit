@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
-import { SignInButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
 import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
-import { X } from "lucide-react";
+import { XLogo } from "@/components/common/XLogo";
 import config from "@/config";
 
 export default async function Home() {
@@ -21,14 +20,9 @@ export default async function Home() {
             {config.projectName}
           </h1>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            <SignInButton>
-              <Button className="px-4 py-2 text-sm sm:text-base">
-                Get Started
-              </Button>
-            </SignInButton>
             <Link href={config.social.twitter} target="_blank" rel="noopener noreferrer">
               <Button variant="outline" size="icon" aria-label="Follow us on X (Twitter)">
-                <X className="h-[1.2rem] w-[1.2rem]" />
+                <XLogo className="h-[1.2rem] w-[1.2rem]" />
               </Button>
             </Link>
             <ThemeToggle />
