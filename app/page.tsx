@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { SignInButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/common/ThemeToggle";
+import Image from "next/image";
 import config from "@/config";
 
 export default async function Home() {
@@ -29,7 +30,17 @@ export default async function Home() {
       </nav>
 
       <div className="flex-1 flex items-center justify-center px-4">
-        <div className="text-center space-y-4 max-w-xl">
+        <div className="text-center space-y-6 max-w-xl">
+          <div className="flex justify-center">
+            <Image
+              src="/logo.png"
+              alt={`${config.projectName} Logo`}
+              width={120}
+              height={120}
+              className="object-contain"
+              priority
+            />
+          </div>
           <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-primary">
             {config.projectName}
           </h1>
