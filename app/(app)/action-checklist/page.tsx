@@ -68,6 +68,14 @@ export default function ActionChecklistPage() {
       await Promise.all([fetchICPAnalyses(), fetchAllStrategies()]);
     };
     loadData();
+    
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const icpId = params.get("icpId");
+      if (icpId) {
+        setSelectedIcpId(icpId);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -360,74 +368,6 @@ export default function ActionChecklistPage() {
         </CardContent>
       </Card>
 
-      {allStrategies.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-            <button
-              onClick={() => setStrategiesOpen(!strategiesOpen)}
-              className="flex items-center gap-3 text-left flex-1 hover:bg-muted/70 transition-colors rounded-lg p-2 -m-2"
-            >
-              {strategiesOpen ? (
-                <ChevronUp className="h-5 w-5 text-muted-foreground" />
-              ) : (
-                <ChevronDown className="h-5 w-5 text-muted-foreground" />
-              )}
-              <div>
-                <h3 className="text-lg font-semibold">
-                  Generated Checklists ({allStrategies.length})
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  Your previously generated action checklists
-                </p>
-              </div>
-            </button>
-          </div>
-          {strategiesOpen && (
-            <div className="space-y-2">
-              {allStrategies.map((s) => (
-                <div
-                  key={s.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors group"
-                  onClick={() => {
-                    setSelectedIcpId(s.icpAnalysisId);
-                    setStrategy(s);
-                    if (s.checklistResult) {
-                      setChecklist(s.checklistResult);
-                    }
-                  }}
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="p-2 rounded-lg bg-background shrink-0">
-                      <CheckSquare className="h-4 w-4 text-muted-foreground" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">
-                        {(() => {
-                          const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
-                          return icp ? new URL(icp.url).hostname : "Unknown";
-                        })()}
-                      </p>
-                      {(() => {
-                        const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
-                        return icp?.primaryICP && (
-                          <p className="text-sm text-muted-foreground truncate">
-                            {icp.primaryICP}
-                          </p>
-                        );
-                      })()}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                    <Clock className="h-4 w-4" />
-                    {formatTimeAgo(s.createdAt)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       {checklist && (
         <Card>
           <CardHeader>
@@ -565,6 +505,74 @@ export default function ActionChecklistPage() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {allStrategies.length > 0 && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+            <button
+              onClick={() => setStrategiesOpen(!strategiesOpen)}
+              className="flex items-center gap-3 text-left flex-1 hover:bg-muted/70 transition-colors rounded-lg p-2 -m-2"
+            >
+              {strategiesOpen ? (
+                <ChevronUp className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              )}
+              <div>
+                <h3 className="text-lg font-semibold">
+                  Generated Checklists ({allStrategies.length})
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  Your previously generated action checklists
+                </p>
+              </div>
+            </button>
+          </div>
+          {strategiesOpen && (
+            <div className="space-y-2">
+              {allStrategies.map((s) => (
+                <div
+                  key={s.id}
+                  className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors group"
+                  onClick={() => {
+                    setSelectedIcpId(s.icpAnalysisId);
+                    setStrategy(s);
+                    if (s.checklistResult) {
+                      setChecklist(s.checklistResult);
+                    }
+                  }}
+                >
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="p-2 rounded-lg bg-background shrink-0">
+                      <CheckSquare className="h-4 w-4 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">
+                        {(() => {
+                          const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                          return icp ? new URL(icp.url).hostname : "Unknown";
+                        })()}
+                      </p>
+                      {(() => {
+                        const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                        return icp?.primaryICP && (
+                          <p className="text-sm text-muted-foreground truncate">
+                            {icp.primaryICP}
+                          </p>
+                        );
+                      })()}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                    <Clock className="h-4 w-4" />
+                    {formatTimeAgo(s.createdAt)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       )}
         </div>
       </div>

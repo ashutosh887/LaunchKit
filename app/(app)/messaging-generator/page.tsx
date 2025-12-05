@@ -66,6 +66,14 @@ export default function MessagingGeneratorPage() {
       await Promise.all([fetchICPAnalyses(), fetchAllStrategies()]);
     };
     loadData();
+    
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const icpId = params.get("icpId");
+      if (icpId) {
+        setSelectedIcpId(icpId);
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -358,6 +366,59 @@ export default function MessagingGeneratorPage() {
             </CardContent>
           </Card>
 
+          {messaging && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-primary" />
+                    One-Line Messaging
+                  </CardTitle>
+                  <Button variant="outline" size="sm" onClick={handleExport}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export to Excel
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {messaging.landing_page_headline && (
+                  <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+                      Landing Page Headline
+                    </p>
+                    <p className="text-2xl font-bold">{messaging.landing_page_headline}</p>
+                  </div>
+                )}
+
+                {messaging.value_prop_one_liner && (
+                  <div className="p-6 rounded-lg bg-muted/50">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+                      Value Prop One-Liner
+                    </p>
+                    <p className="text-lg font-semibold">{messaging.value_prop_one_liner}</p>
+                  </div>
+                )}
+
+                {messaging.dm_opener && (
+                  <div className="p-6 rounded-lg bg-muted/50">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
+                      DM Opener
+                    </p>
+                    <p className="text-base">{messaging.dm_opener}</p>
+                  </div>
+                )}
+
+                <div className="pt-4">
+                  <p className="text-xs text-muted-foreground">
+                    💡 <strong>Tip:</strong> These messaging lines are optimized for
+                    9-13 words, pain-first, and outcome-driven. Use them across your
+                    landing pages, DMs, and outreach campaigns.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {allStrategies.length > 0 && (
             <div className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
@@ -424,59 +485,6 @@ export default function MessagingGeneratorPage() {
                 </div>
               )}
             </div>
-          )}
-
-          {messaging && (
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                    One-Line Messaging
-                  </CardTitle>
-                  <Button variant="outline" size="sm" onClick={handleExport}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Export to Excel
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {messaging.landing_page_headline && (
-                  <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                      Landing Page Headline
-                    </p>
-                    <p className="text-2xl font-bold">{messaging.landing_page_headline}</p>
-                  </div>
-                )}
-
-                {messaging.value_prop_one_liner && (
-                  <div className="p-6 rounded-lg bg-muted/50">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                      Value Prop One-Liner
-                    </p>
-                    <p className="text-lg font-semibold">{messaging.value_prop_one_liner}</p>
-                  </div>
-                )}
-
-                {messaging.dm_opener && (
-                  <div className="p-6 rounded-lg bg-muted/50">
-                    <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wide">
-                      DM Opener
-                    </p>
-                    <p className="text-base">{messaging.dm_opener}</p>
-                  </div>
-                )}
-
-                <div className="pt-4">
-                  <p className="text-xs text-muted-foreground">
-                    💡 <strong>Tip:</strong> These messaging lines are optimized for
-                    9-13 words, pain-first, and outcome-driven. Use them across your
-                    landing pages, DMs, and outreach campaigns.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           )}
         </div>
       </div>

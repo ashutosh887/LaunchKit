@@ -396,71 +396,6 @@ export default function GTMStrategyGeneratorPage() {
             </CardContent>
           </Card>
 
-          {allStrategies.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
-                <button
-                  onClick={() => setStrategiesOpen(!strategiesOpen)}
-                  className="flex items-center gap-3 text-left flex-1 hover:bg-muted/70 transition-colors rounded-lg p-2 -m-2"
-                >
-                  {strategiesOpen ? (
-                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
-                  )}
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      Generated Strategies ({allStrategies.length})
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Your previously generated GTM strategies
-                    </p>
-                  </div>
-                </button>
-              </div>
-              {strategiesOpen && (
-                <div className="space-y-2">
-                  {allStrategies.map((s) => (
-                    <div
-                      key={s.id}
-                      className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors group"
-                      onClick={() => {
-                        setSelectedIcpId(s.icpAnalysisId);
-                        setStrategy(s);
-                      }}
-                    >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="p-2 rounded-lg bg-background shrink-0">
-                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium truncate">
-                            {(() => {
-                              const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
-                              return icp ? new URL(icp.url).hostname : "Unknown";
-                            })()}
-                          </p>
-                          {(() => {
-                            const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
-                            return icp?.primaryICP && (
-                              <p className="text-sm text-muted-foreground truncate">
-                                {icp.primaryICP}
-                              </p>
-                            );
-                          })()}
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
-                        <Clock className="h-4 w-4" />
-                        {formatTimeAgo(s.createdAt)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
       {strategy && strategy.gtmResult && (
         <div className="space-y-6">
           <Card>
@@ -598,7 +533,7 @@ export default function GTMStrategyGeneratorPage() {
                         Your messaging has been generated. Visit the Messaging Generator page to view and export your messaging variants.
                       </p>
                       <Button asChild variant="outline" size="sm">
-                        <a href="/messaging-generator">
+                        <a href={`/messaging-generator?icpId=${strategy.icpAnalysisId}`}>
                           Go to Messaging Generator
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </a>
@@ -618,7 +553,7 @@ export default function GTMStrategyGeneratorPage() {
                         Your action checklist has been generated. Visit the Action Checklist page to view and export your actionable tasks.
                       </p>
                       <Button asChild variant="outline" size="sm">
-                        <a href="/action-checklist">
+                        <a href={`/action-checklist?icpId=${strategy.icpAnalysisId}`}>
                           Go to Action Checklist
                           <ArrowRight className="h-4 w-4 ml-2" />
                         </a>
@@ -820,6 +755,71 @@ export default function GTMStrategyGeneratorPage() {
           </Card>
         </div>
       )}
+
+          {allStrategies.length > 0 && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <button
+                  onClick={() => setStrategiesOpen(!strategiesOpen)}
+                  className="flex items-center gap-3 text-left flex-1 hover:bg-muted/70 transition-colors rounded-lg p-2 -m-2"
+                >
+                  {strategiesOpen ? (
+                    <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                  ) : (
+                    <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                  )}
+                  <div>
+                    <h3 className="text-lg font-semibold">
+                      Generated Strategies ({allStrategies.length})
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Your previously generated GTM strategies
+                    </p>
+                  </div>
+                </button>
+              </div>
+              {strategiesOpen && (
+                <div className="space-y-2">
+                  {allStrategies.map((s) => (
+                    <div
+                      key={s.id}
+                      className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors group"
+                      onClick={() => {
+                        setSelectedIcpId(s.icpAnalysisId);
+                        setStrategy(s);
+                      }}
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="p-2 rounded-lg bg-background shrink-0">
+                          <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">
+                            {(() => {
+                              const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                              return icp ? new URL(icp.url).hostname : "Unknown";
+                            })()}
+                          </p>
+                          {(() => {
+                            const icp = icpAnalyses.find(a => a.id === s.icpAnalysisId) || s.icpAnalysis;
+                            return icp?.primaryICP && (
+                              <p className="text-sm text-muted-foreground truncate">
+                                {icp.primaryICP}
+                              </p>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground shrink-0">
+                        <Clock className="h-4 w-4" />
+                        {formatTimeAgo(s.createdAt)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
