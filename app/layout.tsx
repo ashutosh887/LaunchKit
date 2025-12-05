@@ -38,6 +38,17 @@ export default function RootLayout({
                   return false;
                 }
               }, true);
+              if (typeof window !== 'undefined' && window.console) {
+                const originalWarn = console.warn;
+                console.warn = function(...args) {
+                  if (args[0] && typeof args[0] === 'string' && args[0].includes('Clerk')) {
+                    if (args[0].includes('development keys') || args[0].includes('afterSignInUrl') || args[0].includes('deprecated')) {
+                      return;
+                    }
+                  }
+                  originalWarn.apply(console, args);
+                };
+              }
             `,
           }}
         />
@@ -48,11 +59,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {clerkKey ? (
-            <ClerkProvider
-              publishableKey={clerkKey}
-              afterSignInUrl="/dashboard"
-              afterSignUpUrl="/dashboard"
-            >
+            <ClerkProvider publishableKey={clerkKey}>
               {children}
             </ClerkProvider>
           ) : (

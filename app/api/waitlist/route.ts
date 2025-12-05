@@ -7,6 +7,8 @@ const waitlistSchema = z.object({
   ventureName: z.string().min(1, "Venture name is required"),
 });
 
+export const maxDuration = 10;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -42,16 +44,6 @@ export async function POST(request: NextRequest) {
         { error: error.issues[0].message },
         { status: 400 }
       );
-    }
-
-    if (error && typeof error === "object" && "message" in error) {
-      const errorMessage = String(error.message);
-      if (errorMessage.includes("MONGODB_URI") || errorMessage.includes("connection")) {
-        return NextResponse.json(
-          { error: "Database connection failed. Please check configuration." },
-          { status: 500 }
-        );
-      }
     }
 
     return NextResponse.json(
