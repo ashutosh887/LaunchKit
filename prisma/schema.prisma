@@ -80,3 +80,18 @@ model Settings {
 
   @@map("settings")
 }
+
+model GTMStrategy {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String?  @map("user_id") @db.ObjectId
+  icpAnalysisId     String   @map("icp_analysis_id") @db.ObjectId
+  gtmResult         Json     @map("gtm_result") // Full GTM strategy result
+  messagingResult   Json?    @map("messaging_result") // One-line messaging result
+  checklistResult   Json?    @map("checklist_result") // Action checklist result
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@index([userId])
+  @@index([icpAnalysisId])
+  @@map("gtm_strategies")
+}

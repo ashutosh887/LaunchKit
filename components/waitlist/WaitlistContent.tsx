@@ -21,7 +21,7 @@ export async function WaitlistContent() {
   const entries = await getWaitlistEntries();
 
   return (
-    <div className="border border-border/30 rounded-lg bg-card overflow-hidden flex flex-col h-full">
+    <div className="rounded-lg bg-card overflow-hidden">
       <WaitlistTable data={entries} />
     </div>
   );

@@ -25,8 +25,11 @@ import {
   CheckCircle2,
   AlertCircle,
   X,
-  RotateCcw
+  RotateCcw,
+  Download,
+  Share2
 } from "lucide-react";
+import { exportICPToExcel, exportICPHistoryToExcel } from "@/lib/excel-export";
 
 interface ICPResult {
   primaryICP: {
@@ -68,6 +71,8 @@ export default function ICPAutoScraperPage() {
   const [history, setHistory] = useState<Analysis[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [localHistory, setLocalHistory] = useState<Analysis[]>([]);
+  const [generatingCard, setGeneratingCard] = useState(false);
+  const [icpCard, setIcpCard] = useState<any>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("launchkit_icp_history");
@@ -257,12 +262,7 @@ export default function ICPAutoScraperPage() {
         <div className="space-y-6">
           <div className="space-y-5">
             <div className="flex items-start justify-between">
-              <div className="space-y-1.5">
-                <h2 className="text-2xl font-bold">Analyze Your Website</h2>
-                <p className="text-muted-foreground text-sm">
-                  Get instant insights about your ideal customer profile
-                </p>
-              </div>
+              <p className="text-muted-foreground">Analyze websites to understand your ideal customer profile</p>
               {(url || productDescription || targetRegion) && (
                 <Button
                   type="button"
@@ -368,7 +368,7 @@ export default function ICPAutoScraperPage() {
               </div>
 
               {error && (
-                <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
+                <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
                   <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
                   <div className="flex-1">
                     <p className="font-medium">Error</p>
@@ -409,7 +409,7 @@ export default function ICPAutoScraperPage() {
           )}
 
           {!loading && result && result.icpResult && (
-            <Card id="icp-result" className="border-2">
+            <Card id="icp-result">
               <CardHeader>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
@@ -512,7 +512,7 @@ export default function ICPAutoScraperPage() {
                   {result.icpResult.whereTheyHangOut.map((place, idx) => (
                     <span
                       key={idx}
-                      className="px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary border border-primary/20"
+                      className="px-4 py-2 rounded-full text-sm font-medium bg-primary/10 text-primary"
                     >
                       {place}
                     </span>
@@ -549,7 +549,7 @@ export default function ICPAutoScraperPage() {
                         </p>
                         <p className="text-sm leading-relaxed">{fix.current}</p>
                       </div>
-                      <div className="pt-2.5 border-t border-border/50">
+                      <div className="pt-2.5">
                         <p className="text-xs font-semibold text-primary mb-1.5 uppercase tracking-wide">
                           Improved
                         </p>
@@ -560,15 +560,58 @@ export default function ICPAutoScraperPage() {
                 </div>
               </div>
 
-                <div className="flex flex-wrap gap-3 pt-2 border-t">
-                  <Button size="lg" className="flex-1 min-w-[200px]">
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <Button 
+                    size="lg" 
+                    className="flex-1 min-w-[200px]"
+                    onClick={() => {
+                      window.location.href = `/gtm-strategy-generator?icpId=${result.id}`;
+                    }}
+                  >
                     <TrendingUp className="h-4 w-4 mr-2" />
                     Generate GTM Plan
                   </Button>
-                  <Button variant="outline" size="lg" disabled>
-                    <Globe className="h-4 w-4 mr-2" />
-                    Find Warm Leads
-                    <span className="ml-2 text-xs opacity-60">(Soon)</span>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={() => {
+                      if (result.icpResult) {
+                        exportICPToExcel(
+                          result.icpResult,
+                          `icp-analysis-${new Date().toISOString().split("T")[0]}.xlsx`
+                        );
+                      }
+                    }}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Download as Excel
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    onClick={async () => {
+                      if (!result.id) return;
+                      setGeneratingCard(true);
+                      try {
+                        const response = await fetch("/api/icp-card", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({ icpAnalysisId: result.id }),
+                        });
+                        const data = await response.json();
+                        if (data.success && data.card) {
+                          setIcpCard(data.card);
+                        }
+                      } catch (e) {
+                        console.error("Failed to generate card", e);
+                      } finally {
+                        setGeneratingCard(false);
+                      }
+                    }}
+                    disabled={generatingCard}
+                  >
+                    <Share2 className="h-4 w-4 mr-2" />
+                    {generatingCard ? "Generating..." : "Generate Shareable Card"}
                   </Button>
                   <Button
                     variant="ghost"
@@ -586,14 +629,80 @@ export default function ICPAutoScraperPage() {
             </Card>
           )}
 
-          {/* History Section */}
+          {icpCard && (
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <Share2 className="h-5 w-5 text-primary" />
+                    Sharable ICP Card
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      const cardText = `${icpCard.card_title || "ICP Summary"}\n\n${icpCard.icp_line || ""}\n\nTop Pain Points:\n${icpCard.pain_points?.map((p: string) => `• ${p}`).join("\n") || ""}\n\nMessaging Hook:\n${icpCard.messaging_hook || ""}\n\nWhere They Hang Out:\n${icpCard.where_they_hangout?.map((w: string) => `• ${w}`).join("\n") || ""}\n\n${icpCard.footer || "Generated by LaunchKit 🚀"}`;
+                      copyToClipboard(cardText);
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Card
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-6 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5">
+                  <h3 className="text-xl font-bold mb-2">{icpCard.card_title || "ICP Summary"}</h3>
+                  <p className="text-base mb-4">{icpCard.icp_line || ""}</p>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-1.5">Top Pain Points</p>
+                      <ul className="space-y-1">
+                        {icpCard.pain_points?.map((point: string, idx: number) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <span className="mt-1 h-1.5 w-1.5 rounded-full bg-destructive shrink-0" />
+                            <span>{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-1.5">Messaging Hook</p>
+                      <p className="text-sm font-semibold text-primary">{icpCard.messaging_hook || ""}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm font-semibold text-muted-foreground mb-1.5">Where They Hang Out</p>
+                      <div className="flex flex-wrap gap-2">
+                        {icpCard.where_they_hangout?.map((place: string, idx: number) => (
+                          <span
+                            key={idx}
+                            className="px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary"
+                          >
+                            {place}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-xs text-muted-foreground mt-4 text-center">
+                    {icpCard.footer || "Generated by LaunchKit 🚀"}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {allHistory.length > 0 && (
             <div className="space-y-4">
-              <button
-                onClick={() => setHistoryOpen(!historyOpen)}
-                className="flex items-center justify-between w-full text-left p-4 rounded-lg bg-muted/50 hover:bg-muted/70 transition-colors"
-              >
-                <div className="flex items-center gap-3">
+              <div className="flex items-center justify-between p-4 rounded-lg bg-muted/50">
+                <button
+                  onClick={() => setHistoryOpen(!historyOpen)}
+                  className="flex items-center gap-3 text-left flex-1 hover:bg-muted/70 transition-colors rounded-lg p-2 -m-2"
+                >
                   {historyOpen ? (
                     <ChevronUp className="h-5 w-5 text-muted-foreground" />
                   ) : (
@@ -603,8 +712,21 @@ export default function ICPAutoScraperPage() {
                     <h3 className="text-lg font-semibold">History ({allHistory.length})</h3>
                     <p className="text-sm text-muted-foreground">Your previous analyses</p>
                   </div>
-                </div>
-              </button>
+                </button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    exportICPHistoryToExcel(
+                      allHistory,
+                      `icp-history-${new Date().toISOString().split("T")[0]}.xlsx`
+                    );
+                  }}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Export History
+                </Button>
+              </div>
               {historyOpen && (
                 <div className="space-y-2">
                   {allHistory.map((analysis) => (

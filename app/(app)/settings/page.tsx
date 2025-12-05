@@ -90,12 +90,7 @@ export default function SettingsPage() {
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
-          <div className="space-y-1.5">
-            <h2 className="text-2xl font-bold">Settings</h2>
-            <p className="text-muted-foreground text-sm">
-              Manage your account settings and preferences
-            </p>
-          </div>
+          <p className="text-muted-foreground">Manage your account settings and preferences</p>
 
           {loading ? (
             <SettingsSkeleton />
@@ -150,7 +145,7 @@ export default function SettingsPage() {
               </div>
 
             {error && (
-              <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
+              <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
                 <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
                 <div className="flex-1">
                   <p className="font-medium">Error</p>
@@ -160,7 +155,7 @@ export default function SettingsPage() {
             )}
 
               {saved && !error && (
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 border border-primary/20 text-primary">
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary">
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
                   <p className="text-sm font-medium">Model preference saved successfully</p>
                 </div>

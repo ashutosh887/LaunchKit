@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { AdminGuard } from "@/components/auth/AdminGuard";
 import { WaitlistContent } from "@/components/waitlist/WaitlistContent";
 import { WaitlistSkeleton } from "@/components/waitlist/WaitlistSkeleton";
-import { PageHeader } from "@/components/common/PageHeader";
 import { prisma } from "@/lib/prisma";
 
 async function getWaitlistCount() {
@@ -18,19 +17,15 @@ export default async function WaitlistAdminPage() {
 
   return (
     <AdminGuard>
-      <div className="flex flex-col h-[calc(100vh-8rem)]">
-        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-6 border-b border-border/40 mb-6">
-          <PageHeader
-            href="/waitlist"
-            description="View all waitlist signups and manage entries"
-            count={count}
-          />
-        </div>
+      <div className="w-full">
+        <div className="max-w-4xl mx-auto">
+          <div className="space-y-4">
+            <p className="text-muted-foreground">View all waitlist signups and manage entries</p>
 
-        <div className="flex-1 min-h-0">
-          <Suspense fallback={<WaitlistSkeleton />}>
-            <WaitlistContent />
-          </Suspense>
+            <Suspense fallback={<WaitlistSkeleton />}>
+              <WaitlistContent />
+            </Suspense>
+          </div>
         </div>
       </div>
     </AdminGuard>

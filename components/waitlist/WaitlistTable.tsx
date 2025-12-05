@@ -162,8 +162,8 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between gap-4 p-6 pb-4 shrink-0">
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between gap-4 p-4 shrink-0">
         <div className="flex-1">
           <Input
             placeholder="Search by email or venture name..."
@@ -187,10 +187,9 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
         )}
       </div>
 
-      <div className="flex-1 overflow-auto px-6">
-        <div className="rounded-md border border-border/30 bg-card overflow-hidden">
-          <div className="relative overflow-auto max-h-full">
-            <table className="w-full caption-bottom text-sm">
+      <div className="overflow-auto max-h-[calc(100vh-20rem)]">
+        <div className="rounded-md bg-card">
+          <table className="w-full caption-bottom text-sm">
               <TableHeader className="sticky top-0 z-20 bg-muted/95 backdrop-blur supports-[backdrop-filter]:bg-muted/80">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id} className="bg-muted/20">
@@ -237,11 +236,10 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
                 )}
               </TableBody>
             </table>
-          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between p-6 pt-4 border-t border-border/30 shrink-0">
+      <div className="flex items-center justify-between p-4 pt-4 shrink-0">
         <div className="text-sm text-muted-foreground">
           Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
           {Math.min(

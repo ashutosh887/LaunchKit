@@ -1,4 +1,4 @@
-import { LucideIcon, Sparkles, TrendingUp, Users, Settings } from "lucide-react";
+import { LucideIcon, Sparkles, TrendingUp, Users, Settings, MessageSquare, CheckSquare, LayoutDashboard } from "lucide-react";
 
 type Route = {
   label: string;
@@ -11,8 +11,11 @@ const config = {
   projectName: "LaunchKit",
   projectDescription: "Ship fast. Get customers faster",
   routes: [
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { label: "ICP Auto-Scraper", href: "/icp-auto-scraper", icon: Sparkles },
     { label: "GTM Strategy Generator", href: "/gtm-strategy-generator", icon: TrendingUp },
+    { label: "Messaging Generator", href: "/messaging-generator", icon: MessageSquare },
+    { label: "Action Checklist", href: "/action-checklist", icon: CheckSquare },
     { label: "Waitlist", href: "/waitlist", role: "admin" as const, icon: Users },
     { label: "Settings", href: "/settings", icon: Settings },
   ] as Route[],
