@@ -36,12 +36,33 @@ async function scrapeWebsite(url: string): Promise<string> {
     const response = await fetch(url, {
       headers: {
         "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+          "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept":
+          "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate, br",
+        "Referer": "https://www.google.com/",
+        "Sec-Fetch-Dest": "document",
+        "Sec-Fetch-Mode": "navigate",
+        "Sec-Fetch-Site": "cross-site",
+        "Sec-Fetch-User": "?1",
+        "Upgrade-Insecure-Requests": "1",
+        "Cache-Control": "max-age=0",
       },
+      redirect: "follow",
+      signal: AbortSignal.timeout(30000),
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch: ${response.statusText}`);
+      if (response.status === 403) {
+        throw new Error(
+          "Website blocked the request. This site may require authentication or has anti-bot protection. Please try a different URL or contact support."
+        );
+      }
+      if (response.status === 404) {
+        throw new Error("Website not found. Please check the URL and try again.");
+      }
+      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
     }
 
     const html = await response.text();
@@ -84,8 +105,19 @@ async function scrapeWebsite(url: string): Promise<string> {
 
     return JSON.stringify(content, null, 2);
   } catch (error) {
+    if (error instanceof Error) {
+      if (error.name === "AbortError" || error.message.includes("timeout")) {
+        throw new Error("Request timed out. The website took too long to respond. Please try again.");
+      }
+      if (error.message.includes("Failed to scrape website")) {
+        throw error;
+      }
+      throw new Error(
+        `Failed to scrape website: ${error.message}`
+      );
+    }
     throw new Error(
-      `Failed to scrape website: ${error instanceof Error ? error.message : "Unknown error"}`
+      `Failed to scrape website: Unknown error occurred`
     );
   }
 }
