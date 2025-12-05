@@ -13,9 +13,9 @@ export function HeroSection() {
           <Image
             src="/logo.png"
             alt={`${config.projectName} Logo`}
-            width={100}
-            height={100}
-            className="object-contain w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24"
+            width={120}
+            height={120}
+            className="object-contain w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32"
             priority
           />
         </div>
