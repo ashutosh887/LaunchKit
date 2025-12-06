@@ -80,15 +80,35 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
         header: "Joined",
         cell: ({ row }) => {
           const date = new Date(row.getValue("createdAt"));
+          const now = new Date();
+          const diffMs = now.getTime() - date.getTime();
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
+          
+          let timeAgo = "";
+          if (diffMins < 1) timeAgo = "Just now";
+          else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+          else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+          else if (diffDays < 7) timeAgo = `${diffDays}d ago`;
+          else timeAgo = "";
+          
           return (
-            <div className="text-sm text-muted-foreground">
-              {date.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
+            <div className="flex flex-col">
+              <div className="text-sm">
+                {date.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
+              {timeAgo && (
+                <div className="text-xs text-muted-foreground">
+                  {timeAgo}
+                </div>
+              )}
             </div>
           );
         },

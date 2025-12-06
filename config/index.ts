@@ -1,4 +1,4 @@
-import { LucideIcon, Sparkles, TrendingUp, Users, Settings, MessageSquare, CheckSquare, LayoutDashboard, Download, Share2, BarChart3 } from "lucide-react";
+import { LucideIcon, Sparkles, TrendingUp, Users, Settings, MessageSquare, CheckSquare, LayoutDashboard, Download, Share2, BarChart3, Shield } from "lucide-react";
 
 type Route = {
   label: string;
@@ -29,7 +29,8 @@ const config = {
     { label: "GTM Strategy Generator", href: "/gtm-strategy-generator", icon: TrendingUp },
     { label: "Messaging Generator", href: "/messaging-generator", icon: MessageSquare },
     { label: "Action Checklist", href: "/action-checklist", icon: CheckSquare },
-    { label: "Waitlist", href: "/waitlist", role: "admin" as const, icon: Users },
+    { label: "Admin Dashboard", href: "/admin-dashboard", role: "admin" as const, icon: Shield },
+    { label: "Waitlist Management", href: "/waitlist-management", role: "admin" as const, icon: Users },
     { label: "Settings", href: "/settings", icon: Settings },
   ] as Route[],
   roles: {
