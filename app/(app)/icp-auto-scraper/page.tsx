@@ -189,11 +189,15 @@ export default function ICPAutoScraperPage() {
         throw new Error("Unexpected response format");
       }
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "We couldn't read that page. Try another URL or add a short product description."
-      );
+      const errorMessage = err instanceof Error ? err.message : "We couldn't read that page.";
+      
+      if (errorMessage.includes("protection") || errorMessage.includes("Cloudflare") || errorMessage.includes("WAF")) {
+        setError(errorMessage);
+      } else {
+        setError(
+          `${errorMessage} This might be due to website protection (Cloudflare, AWS WAF, or similar). If this is your website, try temporarily disabling these protections and retry. Otherwise, try adding a product description to help with the analysis.`
+        );
+      }
     } finally {
       setLoading(false);
     }

@@ -56,13 +56,20 @@ async function scrapeWebsite(url: string): Promise<string> {
     if (!response.ok) {
       if (response.status === 403) {
         throw new Error(
-          "Website blocked the request. This site may require authentication or has anti-bot protection. Please try a different URL or contact support."
+          "We couldn't access this website. It may have anti-bot protection enabled (like Cloudflare, AWS WAF, or similar). If this is your website, try temporarily disabling these protections and retry. Otherwise, try a different URL or add a product description to help with the analysis."
         );
       }
       if (response.status === 404) {
         throw new Error("Website not found. Please check the URL and try again.");
       }
-      throw new Error(`Failed to fetch: ${response.status} ${response.statusText}`);
+      if (response.status === 429) {
+        throw new Error(
+          "Too many requests. The website may have rate limiting enabled. Please wait a moment and try again."
+        );
+      }
+      throw new Error(
+        `We couldn't scrape this website (${response.status} ${response.statusText}). This might be due to website protection (Cloudflare, AWS WAF, etc.). If this is your website, try temporarily disabling these protections and retry. Otherwise, try adding a product description to help with the analysis.`
+      );
     }
 
     const html = await response.text();
@@ -107,17 +114,24 @@ async function scrapeWebsite(url: string): Promise<string> {
   } catch (error) {
     if (error instanceof Error) {
       if (error.name === "AbortError" || error.message.includes("timeout")) {
-        throw new Error("Request timed out. The website took too long to respond. Please try again.");
+        throw new Error(
+          "Request timed out. The website took too long to respond. This might be due to website protection. If this is your website, try temporarily disabling protections (Cloudflare, AWS WAF, etc.) and retry."
+        );
       }
-      if (error.message.includes("Failed to scrape website")) {
+      if (error.message.includes("protection") || error.message.includes("blocked") || error.message.includes("Cloudflare") || error.message.includes("WAF")) {
         throw error;
       }
+      if (error.message.includes("fetch") || error.message.includes("network") || error.message.includes("ECONNREFUSED") || error.message.includes("ENOTFOUND")) {
+        throw new Error(
+          `We couldn't access this website: ${error.message}. This might be due to website protection (Cloudflare, AWS WAF, or similar). If this is your website, try temporarily disabling these protections and retry. Otherwise, try adding a product description to help with the analysis.`
+        );
+      }
       throw new Error(
-        `Failed to scrape website: ${error.message}`
+        `We couldn't scrape this website: ${error.message}. This might be due to website protection enabled on the site. If this is your website, try temporarily disabling protections (Cloudflare, AWS WAF, etc.) and retry. Otherwise, try adding a product description to help with the analysis.`
       );
     }
     throw new Error(
-      `Failed to scrape website: Unknown error occurred`
+      `We couldn't scrape this website. This might be due to website protection. If this is your website, try temporarily disabling protections and retry. Otherwise, try adding a product description to help with the analysis.`
     );
   }
 }
