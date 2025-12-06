@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { GeneratorPageSkeleton } from "@/components/common/GeneratorPageSkeleton";
+import { LoadingState } from "@/components/common/LoadingState";
+import { PageContainer } from "@/components/common/PageContainer";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -61,11 +64,17 @@ export default function ActionChecklistPage() {
   const [strategiesOpen, setStrategiesOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [fetchingStrategy, setFetchingStrategy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
-      await Promise.all([fetchICPAnalyses(), fetchAllStrategies()]);
+      setFetching(true);
+      try {
+        await Promise.all([fetchICPAnalyses(), fetchAllStrategies()]);
+      } finally {
+        setFetching(false);
+      }
     };
     loadData();
     
@@ -79,14 +88,15 @@ export default function ActionChecklistPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedIcpId) {
+    if (selectedIcpId && icpAnalyses.length > 0) {
       const icp = icpAnalyses.find((a) => a.id === selectedIcpId);
       setSelectedIcp(icp || null);
       fetchStrategy(selectedIcpId);
-    } else {
+    } else if (!selectedIcpId) {
       setSelectedIcp(null);
       setStrategy(null);
       setChecklist(null);
+      setFetchingStrategy(false);
     }
   }, [selectedIcpId, icpAnalyses]);
 
@@ -122,56 +132,46 @@ export default function ActionChecklistPage() {
 
         setIcpAnalyses(allAnalyses);
       }
-    } catch {} finally {
-      setFetching(false);
-    }
+    } catch {}
   };
 
   const fetchAllStrategies = async () => {
     try {
-      const response = await fetch("/api/gtm-strategy?limit=50");
+      const response = await fetch("/api/gtm-strategy?limit=50&includeDetails=true");
       if (response.ok) {
         const data = await response.json();
         if (data.strategies) {
-          const strategiesWithDetails = await Promise.all(
-            data.strategies
-              .filter((s: GTMStrategy) => s.checklistResult)
-              .map(async (s: GTMStrategy) => {
-                try {
-                  const detailResponse = await fetch(`/api/gtm-strategy/${s.id}`);
-                  if (detailResponse.ok) {
-                    return (await detailResponse.json()).strategy;
-                  }
-                } catch {}
-                return s;
-              })
-          );
-          setAllStrategies(strategiesWithDetails);
+          const filtered = data.strategies.filter((s: GTMStrategy) => s.checklistResult);
+          setAllStrategies(filtered);
         }
       }
     } catch {}
   };
 
   const fetchStrategy = async (icpAnalysisId: string) => {
+    setFetchingStrategy(true);
     try {
       const response = await fetch(
-        `/api/gtm-strategy?icpAnalysisId=${icpAnalysisId}&limit=1`
+        `/api/gtm-strategy?icpAnalysisId=${icpAnalysisId}&limit=1&includeDetails=true`
       );
       if (response.ok) {
         const data = await response.json();
         if (data.strategies && data.strategies.length > 0) {
-          const strategyId = data.strategies[0].id;
-          const strategyResponse = await fetch(`/api/gtm-strategy/${strategyId}`);
-          if (strategyResponse.ok) {
-            const strategyData = await strategyResponse.json();
-            setStrategy(strategyData.strategy);
-            if (strategyData.strategy.checklistResult) {
-              setChecklist(strategyData.strategy.checklistResult);
-            }
+          const strategy = data.strategies[0];
+          setStrategy(strategy);
+          if (strategy.checklistResult) {
+            setChecklist(strategy.checklistResult);
+          } else {
+            setChecklist(null);
           }
+        } else {
+          setStrategy(null);
+          setChecklist(null);
         }
       }
-    } catch {}
+    } catch {} finally {
+      setFetchingStrategy(false);
+    }
   };
 
   const handleGenerateChecklist = async () => {
@@ -230,60 +230,17 @@ export default function ActionChecklistPage() {
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   };
 
-  if (fetching) {
-    return (
-      <div className="w-full">
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            <div className="flex items-center justify-center min-h-[400px]">
-              <LoadingSpinner message="Loading your ICP analyses..." />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (icpAnalyses.length === 0) {
-    return (
-      <div className="w-full">
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-12 space-y-4">
-                  <div className="inline-flex p-4 rounded-full bg-muted">
-                    <CheckSquare className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      No ICP Records Found
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      You need to create an ICP analysis first. Go to the ICP
-                      Auto-Scraper page and analyze your website.
-                    </p>
-                    <Button asChild>
-                      <a href="/icp-auto-scraper">
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        Create ICP Analysis
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="w-full">
-      <div className="max-w-4xl mx-auto">
-        <div className="space-y-6">
-          <p className="text-muted-foreground">Get actionable checklists to execute your GTM strategy</p>
+    <PageContainer>
+      <LoadingState
+        isLoading={fetching}
+        skeleton={<GeneratorPageSkeleton />}
+        message="Loading your ICP analyses..."
+      >
+        <div className="space-y-6 min-h-[600px]">
+          {icpAnalyses.length > 0 && (
+            <>
+              <p className="text-muted-foreground">Get actionable checklists to execute your GTM strategy</p>
 
       <Card>
         <CardHeader>
@@ -345,7 +302,7 @@ export default function ActionChecklistPage() {
             </div>
           )}
 
-          {selectedIcpId && !checklist && (
+          {selectedIcpId && !checklist && !fetchingStrategy && (
             <Button
               onClick={handleGenerateChecklist}
               disabled={loading}
@@ -364,6 +321,12 @@ export default function ActionChecklistPage() {
                 </>
               )}
             </Button>
+          )}
+
+          {fetchingStrategy && (
+            <div className="flex items-center justify-center py-12 min-h-[120px]">
+              <LoadingSpinner message="Loading checklist..." />
+            </div>
           )}
         </CardContent>
       </Card>
@@ -574,8 +537,37 @@ export default function ActionChecklistPage() {
           )}
         </div>
       )}
+      </>
+          )}
+
+          {icpAnalyses.length === 0 && (
+            <Card>
+              <CardContent className="pt-6">
+                <div className="text-center py-12 space-y-4">
+                  <div className="inline-flex p-4 rounded-full bg-muted">
+                    <CheckSquare className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-2">
+                      No ICP Records Found
+                    </h3>
+                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                      You need to create an ICP analysis first. Go to the ICP
+                      Auto-Scraper page and analyze your website.
+                    </p>
+                    <Button asChild>
+                      <a href="/icp-auto-scraper">
+                        <Sparkles className="h-4 w-4 mr-2" />
+                        Create ICP Analysis
+                      </a>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
-      </div>
-    </div>
+      </LoadingState>
+    </PageContainer>
   );
 }

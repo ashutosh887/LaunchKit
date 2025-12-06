@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { AdminDashboardSkeleton } from "@/components/common/AdminDashboardSkeleton";
+import { LoadingState } from "@/components/common/LoadingState";
+import { PageContainer } from "@/components/common/PageContainer";
 import {
   Card,
   CardContent,
@@ -142,22 +145,26 @@ export function AdminDashboardClient() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="w-full">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <LoadingSpinner message="Loading admin dashboard..." />
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const modelData = stats ? [
+    { name: "OpenAI", value: stats.modelPreferences.openai },
+    { name: "Anthropic", value: stats.modelPreferences.anthropic },
+  ] : [];
 
-  if (!stats) {
-    return (
-      <div className="w-full">
-        <div className="max-w-7xl mx-auto">
+  const icpStatusData = stats ? [
+    { name: "Completed", value: stats.icpByStatus.completed },
+    { name: "Pending", value: stats.icpByStatus.pending },
+    { name: "Failed", value: stats.icpByStatus.failed },
+    { name: "Retrying", value: stats.icpByStatus.retrying },
+  ] : [];
+
+  return (
+    <PageContainer maxWidth="7xl">
+      <LoadingState
+        isLoading={loading}
+        skeleton={<AdminDashboardSkeleton />}
+        message="Loading admin dashboard..."
+      >
+        {!stats ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Failed to load admin dashboard</p>
             <button
@@ -167,27 +174,8 @@ export function AdminDashboardClient() {
               Retry
             </button>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  const modelData = [
-    { name: "OpenAI", value: stats.modelPreferences.openai },
-    { name: "Anthropic", value: stats.modelPreferences.anthropic },
-  ];
-
-  const icpStatusData = [
-    { name: "Completed", value: stats.icpByStatus.completed },
-    { name: "Pending", value: stats.icpByStatus.pending },
-    { name: "Failed", value: stats.icpByStatus.failed },
-    { name: "Retrying", value: stats.icpByStatus.retrying },
-  ];
-
-  return (
-    <div className="w-full">
-      <div className="max-w-7xl mx-auto">
-        <div className="space-y-6">
+        ) : (
+          <div className="space-y-6">
           <div className="flex items-center justify-between">
             <p className="text-muted-foreground">Platform overview and activity metrics</p>
             <button
@@ -577,8 +565,9 @@ export function AdminDashboardClient() {
             </Card>
           </div>
         </div>
-      </div>
-    </div>
+        )}
+      </LoadingState>
+    </PageContainer>
   );
 }
 

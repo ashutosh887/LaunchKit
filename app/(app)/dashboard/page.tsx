@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { DashboardSkeleton } from "@/components/common/DashboardSkeleton";
+import { LoadingState } from "@/components/common/LoadingState";
+import { PageContainer } from "@/components/common/PageContainer";
 import {
   Card,
   CardContent,
@@ -73,34 +76,19 @@ export default function DashboardPage() {
     return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   };
 
-  if (loading) {
-    return (
-      <div className="w-full">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <LoadingSpinner message="Loading dashboard..." />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <div className="w-full">
-        <div className="max-w-4xl mx-auto">
+  return (
+    <PageContainer>
+      <LoadingState
+        isLoading={loading}
+        skeleton={<DashboardSkeleton />}
+        message="Loading dashboard..."
+      >
+        {!stats ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">Failed to load dashboard data</p>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="w-full">
-      <div className="max-w-4xl mx-auto">
-        <div className="space-y-6">
+        ) : (
+          <div className="space-y-6">
           <p className="text-muted-foreground">Overview of your activity and generated content</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -349,8 +337,9 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </div>
-    </div>
+          </div>
+        )}
+      </LoadingState>
+    </PageContainer>
   );
 }

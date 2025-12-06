@@ -298,6 +298,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const icpAnalysisId = searchParams.get("icpAnalysisId");
     const limit = parseInt(searchParams.get("limit") || "10");
+    const includeDetails = searchParams.get("includeDetails") === "true";
 
     const where: any = {
       userId: dbUser.id,
@@ -313,7 +314,29 @@ export async function GET(req: Request) {
       take: limit,
     });
 
-    return new Response(JSON.stringify({ strategies }), {
+    // If includeDetails is true, fetch icpAnalysis for each strategy
+    const strategiesWithDetails = includeDetails
+      ? await Promise.all(
+          strategies.map(async (s) => {
+            try {
+              const icpAnalysis = await prisma.iCPAnalysis.findUnique({
+                where: { id: s.icpAnalysisId },
+              });
+              return {
+                ...s,
+                icpAnalysis: icpAnalysis || null,
+              };
+            } catch {
+              return {
+                ...s,
+                icpAnalysis: null,
+              };
+            }
+          })
+        )
+      : strategies;
+
+    return new Response(JSON.stringify({ strategies: strategiesWithDetails }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
