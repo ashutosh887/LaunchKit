@@ -21,7 +21,7 @@ export function HeroSection() {
         </div>
         
         <div className="space-y-3 sm:space-y-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary">
             {config.projectName}
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">

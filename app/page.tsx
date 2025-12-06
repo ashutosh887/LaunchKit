@@ -16,7 +16,7 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col bg-background">
       <nav className="w-full bg-background/80 backdrop-blur">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-          <h1 className="text-xl sm:text-2xl font-semibold text-foreground">
+          <h1 className="text-xl sm:text-2xl font-semibold text-primary">
             {config.projectName}
           </h1>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
