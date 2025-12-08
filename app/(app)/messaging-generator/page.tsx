@@ -235,15 +235,15 @@ export default function MessagingGeneratorPage() {
         skeleton={<GeneratorPageSkeleton />}
         message="Loading your ICP analyses..."
       >
-        <div className="space-y-6 min-h-[600px]">
+        <div className="space-y-4 md:space-y-6 min-h-[600px]">
           {icpAnalyses.length > 0 && (
             <>
-              <p className="text-muted-foreground">Generate high-conversion messaging lines for your product</p>
+              <p className="text-sm md:text-base text-muted-foreground">Generate high-conversion messaging lines for your product</p>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Target className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                <Target className="h-4 w-4 md:h-5 md:w-5 shrink-0" />
                 Select ICP Analysis
               </CardTitle>
             </CardHeader>
@@ -269,21 +269,21 @@ export default function MessagingGeneratorPage() {
               </Select>
 
               {selectedIcp && (
-                <div className="p-4 rounded-lg bg-muted/50 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
+                <div className="p-3 md:p-4 rounded-lg bg-muted/50 space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex items-center gap-2 min-w-0">
                       <a
                         href={selectedIcp.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-primary hover:underline font-medium flex items-center gap-1"
+                        className="text-primary hover:underline font-medium flex items-center gap-1 truncate min-w-0"
                       >
-                        {new URL(selectedIcp.url).hostname}
-                        <ExternalLink className="h-3 w-3" />
+                        <span className="truncate">{new URL(selectedIcp.url).hostname}</span>
+                        <ExternalLink className="h-3 w-3 shrink-0" />
                       </a>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-xs md:text-sm text-muted-foreground shrink-0">
+                      <Clock className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
                       {formatTimeAgo(selectedIcp.updatedAt)}
                     </div>
                   </div>

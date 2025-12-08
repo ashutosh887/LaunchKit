@@ -89,23 +89,23 @@ export default function SettingsPage() {
   return (
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
-        <div className="space-y-6">
-          <p className="text-muted-foreground">Manage your account settings and preferences</p>
+        <div className="space-y-4 md:space-y-6">
+          <p className="text-sm md:text-base text-muted-foreground">Manage your account settings and preferences</p>
 
           {loading ? (
             <SettingsSkeleton />
           ) : (
-            <div className="space-y-5">
+            <div className="space-y-4 md:space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="ai-provider" className="text-base font-semibold">
+                <Label htmlFor="ai-provider" className="text-sm md:text-base font-semibold">
                   AI Provider
                 </Label>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Select
                     value={aiProvider}
                     onValueChange={(value) => setAiProvider(value as AIProvider)}
                   >
-                    <SelectTrigger id="ai-provider" className="flex-1 h-11 text-base">
+                    <SelectTrigger id="ai-provider" className="flex-1 h-10 md:h-11 text-sm md:text-base">
                       <SelectValue placeholder="Select AI provider" />
                     </SelectTrigger>
                     <SelectContent>
@@ -116,7 +116,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={handleSave}
                     disabled={saving || !hasChanged}
-                    className="h-11 text-sm font-medium"
+                    className="h-10 md:h-11 text-sm font-medium w-full sm:w-auto"
                     size="default"
                   >
                     {saving ? (

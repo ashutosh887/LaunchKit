@@ -88,8 +88,8 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Failed to load dashboard data</p>
           </div>
         ) : (
-          <div className="space-y-6">
-          <p className="text-muted-foreground">Overview of your activity and generated content</p>
+          <div className="space-y-4 md:space-y-6">
+          <p className="text-sm md:text-base text-muted-foreground">Overview of your activity and generated content</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Card className="bg-primary/5">
@@ -100,8 +100,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  <span className="text-3xl font-bold">{stats.icpAnalysesCount}</span>
+                  <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                  <span className="text-2xl md:text-3xl font-bold">{stats.icpAnalysesCount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -114,8 +114,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                  <span className="text-3xl font-bold">{stats.gtmStrategiesCount}</span>
+                  <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                  <span className="text-2xl md:text-3xl font-bold">{stats.gtmStrategiesCount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -128,8 +128,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-5 w-5 text-primary" />
-                  <span className="text-3xl font-bold">{stats.messagingCount}</span>
+                  <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                  <span className="text-2xl md:text-3xl font-bold">{stats.messagingCount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -142,8 +142,8 @@ export default function DashboardPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <CheckSquare className="h-5 w-5 text-primary" />
-                  <span className="text-3xl font-bold">{stats.checklistsCount}</span>
+                  <CheckSquare className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                  <span className="text-2xl md:text-3xl font-bold">{stats.checklistsCount}</span>
                 </div>
               </CardContent>
             </Card>
@@ -152,12 +152,12 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card className="bg-muted/30">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-5 w-5" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                    <Sparkles className="h-4 w-4 md:h-5 md:w-5 shrink-0" />
                     Recent ICP Analyses
                   </CardTitle>
-                  <Button asChild variant="ghost" size="sm">
+                  <Button asChild variant="ghost" size="sm" className="w-full sm:w-auto shrink-0">
                     <Link href="/icp-auto-scraper">
                       View All
                       <ArrowRight className="h-4 w-4 ml-1" />
@@ -220,12 +220,12 @@ export default function DashboardPage() {
 
             <Card className="bg-muted/30">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5" />
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                    <TrendingUp className="h-4 w-4 md:h-5 md:w-5 shrink-0" />
                     Recent GTM Strategies
                   </CardTitle>
-                  <Button asChild variant="ghost" size="sm">
+                  <Button asChild variant="ghost" size="sm" className="w-full sm:w-auto shrink-0">
                     <Link href="/gtm-strategy-generator">
                       View All
                       <ArrowRight className="h-4 w-4 ml-1" />

@@ -265,15 +265,15 @@ export default function ICPAutoScraperPage() {
       <div className="max-w-4xl mx-auto">
         <div className="space-y-6">
           <div className="space-y-5">
-            <div className="flex items-start justify-between">
-              <p className="text-muted-foreground">Analyze websites to understand your ideal customer profile</p>
+            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+              <p className="text-sm md:text-base text-muted-foreground">Analyze websites to understand your ideal customer profile</p>
               {(url || productDescription || targetRegion) && (
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={handleReset}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground shrink-0"
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset
@@ -283,7 +283,7 @@ export default function ICPAutoScraperPage() {
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <Label htmlFor="url" className="text-base font-semibold">
+                <Label htmlFor="url" className="text-sm md:text-base font-semibold">
                   Website URL <span className="text-destructive">*</span>
                 </Label>
                 <div className="relative">
@@ -294,7 +294,7 @@ export default function ICPAutoScraperPage() {
                     value={url}
                     onChange={(e) => setUrl(e.target.value)}
                     disabled={loading}
-                    className={`h-11 text-base pr-10 ${error && !validateUrl(url) ? "border-destructive ring-destructive" : ""}`}
+                    className={`h-10 md:h-11 text-sm md:text-base pr-10 ${error && !validateUrl(url) ? "border-destructive ring-destructive" : ""}`}
                   />
                   {url && (
                     <button
@@ -311,10 +311,10 @@ export default function ICPAutoScraperPage() {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                 <div className="space-y-2">
-                  <Label htmlFor="product" className="text-base font-semibold">
-                    Product Description <span className="text-muted-foreground font-normal text-sm">(optional)</span>
+                  <Label htmlFor="product" className="text-sm md:text-base font-semibold">
+                    Product Description <span className="text-muted-foreground font-normal text-xs md:text-sm">(optional)</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -324,7 +324,7 @@ export default function ICPAutoScraperPage() {
                       value={productDescription}
                       onChange={(e) => setProductDescription(e.target.value)}
                       disabled={loading}
-                      className="h-11 text-base pr-10"
+                      className="h-10 md:h-11 text-sm md:text-base pr-10"
                     />
                     {productDescription && (
                       <button
@@ -342,8 +342,8 @@ export default function ICPAutoScraperPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="region" className="text-base font-semibold">
-                    Target Market <span className="text-muted-foreground font-normal text-sm">(optional)</span>
+                  <Label htmlFor="region" className="text-sm md:text-base font-semibold">
+                    Target Market <span className="text-muted-foreground font-normal text-xs md:text-sm">(optional)</span>
                   </Label>
                   <div className="relative">
                     <Input
@@ -353,7 +353,7 @@ export default function ICPAutoScraperPage() {
                       value={targetRegion}
                       onChange={(e) => setTargetRegion(e.target.value)}
                       disabled={loading}
-                      className="h-11 text-base pr-10"
+                      className="h-10 md:h-11 text-sm md:text-base pr-10"
                     />
                     {targetRegion && (
                       <button
@@ -384,7 +384,7 @@ export default function ICPAutoScraperPage() {
               <Button
                 type="submit"
                 disabled={loading || !url.trim() || !validateUrl(url)}
-                className="w-full h-12 text-base font-semibold"
+                className="w-full h-11 md:h-12 text-sm md:text-base font-semibold"
                 size="lg"
               >
                 {loading ? (
@@ -420,25 +420,25 @@ export default function ICPAutoScraperPage() {
                     <div className="p-2 rounded-lg bg-primary/10">
                       <CheckCircle2 className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <CardTitle className="text-xl">Analysis Complete</CardTitle>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <Clock className="h-4 w-4" />
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-lg md:text-xl">Analysis Complete</CardTitle>
+                      <div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-muted-foreground mt-1">
+                        <Clock className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
                         <a 
                           href={result.url} 
                           target="_blank" 
                           rel="noopener noreferrer" 
-                          className="text-primary hover:underline font-medium"
+                          className="text-primary hover:underline font-medium truncate min-w-0"
                         >
                           {new URL(result.url).hostname}
                         </a>
-                        <span>•</span>
-                        <span>{formatTimeAgo(result.updatedAt)}</span>
+                        <span className="shrink-0">•</span>
+                        <span className="shrink-0">{formatTimeAgo(result.updatedAt)}</span>
                       </div>
                     </div>
                   </div>
                   {result.confidenceScore && (
-                    <div className="px-4 py-2 rounded-full bg-primary/10 text-primary font-semibold text-sm">
+                    <div className="px-3 md:px-4 py-1.5 md:py-2 rounded-full bg-primary/10 text-primary font-semibold text-xs md:text-sm shrink-0">
                       {Math.round(result.confidenceScore)}% Confidence
                     </div>
                   )}
@@ -447,8 +447,8 @@ export default function ICPAutoScraperPage() {
               <CardContent className="space-y-6">
                 <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Target className="h-6 w-6 text-primary" />
-                  <h3 className="text-2xl font-bold">Ideal Customer Profile</h3>
+                  <Target className="h-5 w-5 md:h-6 md:w-6 text-primary shrink-0" />
+                  <h3 className="text-xl md:text-2xl font-bold">Ideal Customer Profile</h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {[
@@ -457,20 +457,20 @@ export default function ICPAutoScraperPage() {
                     { label: "Industry", value: result.icpResult.primaryICP.industry, icon: "💼" },
                     { label: "Geography", value: result.icpResult.primaryICP.geography, icon: "🌍" },
                   ].map((item, idx) => (
-                    <div key={idx} className="p-4 rounded-lg bg-muted/50">
-                      <p className="text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
+                    <div key={idx} className="p-3 md:p-4 rounded-lg bg-muted/50">
+                      <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
                         <span>{item.icon}</span>
                         {item.label}
                       </p>
-                      <p className="text-base font-semibold">{item.value}</p>
+                      <p className="text-sm md:text-base font-semibold break-words">{item.value}</p>
                     </div>
                   ))}
-                  <div className="md:col-span-2 p-4 rounded-lg bg-muted/50">
-                    <p className="text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
+                  <div className="md:col-span-2 p-3 md:p-4 rounded-lg bg-muted/50">
+                    <p className="text-xs md:text-sm font-medium text-muted-foreground mb-1.5 flex items-center gap-2">
                       <span>💰</span>
                       Budget
                     </p>
-                    <p className="text-base font-semibold">{result.icpResult.primaryICP.budget}</p>
+                    <p className="text-sm md:text-base font-semibold break-words">{result.icpResult.primaryICP.budget}</p>
                   </div>
                 </div>
               </div>
@@ -478,8 +478,8 @@ export default function ICPAutoScraperPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <AlertCircle className="h-5 w-5 text-destructive" />
-                    <h3 className="text-lg font-semibold">Pain Points</h3>
+                    <AlertCircle className="h-4 w-4 md:h-5 md:w-5 text-destructive shrink-0" />
+                    <h3 className="text-base md:text-lg font-semibold">Pain Points</h3>
                   </div>
                   <ul className="space-y-2.5">
                     {result.icpResult.painPoints.map((point, idx) => (
@@ -493,8 +493,8 @@ export default function ICPAutoScraperPage() {
 
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Jobs to be Done</h3>
+                    <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                    <h3 className="text-base md:text-lg font-semibold">Jobs to be Done</h3>
                   </div>
                   <ul className="space-y-2.5">
                     {result.icpResult.jobsToBeDone.map((job, idx) => (
@@ -509,8 +509,8 @@ export default function ICPAutoScraperPage() {
 
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Globe className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-semibold">Where to Find Them</h3>
+                  <Globe className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                  <h3 className="text-base md:text-lg font-semibold">Where to Find Them</h3>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {result.icpResult.whereTheyHangOut.map((place, idx) => (
@@ -525,10 +525,10 @@ export default function ICPAutoScraperPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <MessageSquare className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-semibold">Messaging Fixes</h3>
+                    <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
+                    <h3 className="text-base md:text-lg font-semibold">Messaging Fixes</h3>
                   </div>
                   <Button
                     variant="outline"
@@ -539,6 +539,7 @@ export default function ICPAutoScraperPage() {
                         .join("\n\n");
                       copyToClipboard(text);
                     }}
+                    className="w-full sm:w-auto shrink-0"
                   >
                     <Copy className="h-4 w-4 mr-1" />
                     Copy All
@@ -564,10 +565,10 @@ export default function ICPAutoScraperPage() {
                 </div>
               </div>
 
-                <div className="flex flex-wrap gap-3 pt-2">
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <Button 
                     size="lg" 
-                    className="flex-1 min-w-[200px]"
+                    className="w-full sm:flex-1 h-11 md:h-12 text-sm md:text-base"
                     onClick={() => {
                       window.location.href = `/gtm-strategy-generator?icpId=${result.id}`;
                     }}
@@ -578,6 +579,7 @@ export default function ICPAutoScraperPage() {
                   <Button
                     variant="outline"
                     size="lg"
+                    className="w-full sm:flex-1 h-11 md:h-12 text-sm md:text-base"
                     onClick={() => {
                       if (result.icpResult) {
                         exportICPToExcel(
@@ -593,6 +595,7 @@ export default function ICPAutoScraperPage() {
                   <Button
                     variant="outline"
                     size="lg"
+                    className="w-full sm:flex-1 h-11 md:h-12 text-sm md:text-base"
                     onClick={async () => {
                       if (!result.id) return;
                       setGeneratingCard(true);
