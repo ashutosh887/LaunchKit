@@ -190,6 +190,9 @@ export default function GTMStrategyGeneratorPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 403) {
+          throw new Error(data.error || "You've reached the creation limit on your plan. Please reach out to our support team for further details.");
+        }
         throw new Error(data.error || "Failed to generate GTM strategy");
       }
 

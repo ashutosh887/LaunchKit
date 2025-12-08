@@ -25,7 +25,6 @@ export async function GET() {
     const last7DaysStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const last30DaysStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    // Get all counts
     const [
       totalUsers,
       usersToday,
@@ -64,7 +63,6 @@ export async function GET() {
       }),
     ]);
 
-    // Get model preferences
     const settings = await prisma.settings.findMany({
       select: { aiProvider: true },
     });
@@ -73,7 +71,6 @@ export async function GET() {
       anthropic: settings.filter((s) => s.aiProvider === "anthropic").length,
     };
 
-    // Get user growth data (last 30 days)
     const userGrowthData = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
@@ -95,7 +92,6 @@ export async function GET() {
       });
     }
 
-    // Get activity breakdown (last 7 days)
     const activityData = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
@@ -137,7 +133,6 @@ export async function GET() {
       });
     }
 
-    // Get recent users
     const recentUsers = await prisma.user.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,
@@ -150,7 +145,6 @@ export async function GET() {
       },
     });
 
-    // Get ICP analyses by status
     const icpByStatus = await Promise.all([
       prisma.iCPAnalysis.count({ where: { status: "pending" } }),
       prisma.iCPAnalysis.count({ where: { status: "completed" } }),
@@ -158,7 +152,6 @@ export async function GET() {
       prisma.iCPAnalysis.count({ where: { status: "retrying" } }),
     ]);
 
-    // Get recent activities
     const recentICPs = await prisma.iCPAnalysis.findMany({
       orderBy: { createdAt: "desc" },
       take: 5,

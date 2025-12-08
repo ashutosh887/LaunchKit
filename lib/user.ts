@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import config from "@/config";
 
 export async function getOrCreateUser(clerkUserId?: string) {
   const clerkUser = clerkUserId ? null : await currentUser();
@@ -22,6 +23,9 @@ export async function getOrCreateUser(clerkUserId?: string) {
   }
 
   const email = clerkUser.emailAddresses?.[0]?.emailAddress || "";
+  const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
+  const isAdmin = email && adminEmails.includes(email.toLowerCase());
+  const plan = isAdmin ? "pro" : "trial";
   
   if (email) {
     dbUser = await prisma.user.findUnique({
@@ -32,7 +36,7 @@ export async function getOrCreateUser(clerkUserId?: string) {
       if (dbUser.clerkId !== userId) {
         dbUser = await prisma.user.update({
           where: { id: dbUser.id },
-          data: { clerkId: userId },
+          data: { clerkId: userId, plan: plan },
         });
       }
       return dbUser;
@@ -51,6 +55,7 @@ export async function getOrCreateUser(clerkUserId?: string) {
           : clerkUser.firstName || clerkUser.lastName || null,
         imageUrl: clerkUser.imageUrl || null,
         username: clerkUser.username || null,
+        plan: plan,
       },
     });
     return dbUser;

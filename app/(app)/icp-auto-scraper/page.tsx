@@ -169,6 +169,9 @@ export default function ICPAutoScraperPage() {
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 403) {
+          throw new Error(data.error || "You've reached the creation limit on your plan. Please reach out to our support team for further details.");
+        }
         throw new Error(data.error || "Failed to analyze website");
       }
 
@@ -191,7 +194,9 @@ export default function ICPAutoScraperPage() {
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "We couldn't read that page.";
       
-      if (errorMessage.includes("protection") || errorMessage.includes("Cloudflare") || errorMessage.includes("WAF")) {
+      if (errorMessage.includes("reached the limit") || errorMessage.includes("creation limit")) {
+        setError(errorMessage);
+      } else if (errorMessage.includes("protection") || errorMessage.includes("Cloudflare") || errorMessage.includes("WAF")) {
         setError(errorMessage);
       } else {
         setError(

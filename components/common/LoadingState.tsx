@@ -11,10 +11,6 @@ interface LoadingStateProps {
   minHeight?: string;
 }
 
-/**
- * Consistent loading state component that prevents layout shifts
- * by maintaining the EXACT same container structure whether loading or not
- */
 export function LoadingState({
   isLoading,
   children,
@@ -23,7 +19,6 @@ export function LoadingState({
   className,
   minHeight = "min-h-[400px]",
 }: LoadingStateProps) {
-  // Always render the same container structure to prevent layout shifts
   return (
     <div className={cn("w-full", className)}>
       {isLoading ? (

@@ -285,6 +285,20 @@ export async function POST(req: Request) {
       : null;
     const userId = dbUser?.id || null;
 
+    const { canCreateContent } = await import("@/lib/plan");
+    const planCheck = await canCreateContent(userId);
+    if (!planCheck.canCreate) {
+      return new Response(
+        JSON.stringify({ 
+          error: planCheck.reason || "You've reached the creation limit on your plan. Please reach out to our support team for further details."
+        }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const body = await req.json();
     const validatedData = icpScrapeSchema.parse(body);
 

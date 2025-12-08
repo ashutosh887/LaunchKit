@@ -46,6 +46,17 @@ const config = {
   social: {
     twitter: "https://x.com/launchkitapp",
   },
+  support: {
+    email: "ashutoshj887@gmail.com",
+  },
+  plans: {
+    trial: {
+      maxCreations: 3,
+    },
+    pro: {
+      maxCreations: -1,
+    },
+  },
   home: {
     hero: {
       subtitle: "Get your first paying customer in 48 hours with AI-powered ICP analysis, GTM strategies, and actionable checklists.",

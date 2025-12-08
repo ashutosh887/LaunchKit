@@ -7,7 +7,6 @@ import {
   GTM_STRATEGY_PROMPT,
   ONE_LINE_MESSAGING_PROMPT,
   ACTION_CHECKLIST_PROMPT,
-  ICP_CARD_PROMPT,
 } from "@/prompts/gtm-strategy";
 
 const gtmStrategySchema = z.object({
@@ -18,7 +17,7 @@ function parseAIResponse(text: string): any {
   try {
     const jsonText = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     return JSON.parse(jsonText);
-  } catch (error) {
+  } catch {
     throw new Error("Invalid JSON response from AI");
   }
 }
@@ -138,6 +137,20 @@ export async function POST(req: Request) {
       ? await prisma.user.findUnique({ where: { clerkId: user.id } })
       : null;
     const userId = dbUser?.id || null;
+
+    const { canCreateContent } = await import("@/lib/plan");
+    const planCheck = await canCreateContent(userId);
+    if (!planCheck.canCreate) {
+      return new Response(
+        JSON.stringify({ 
+          error: planCheck.reason || "You've reached the creation limit on your plan. Please reach out to our support team for further details."
+        }),
+        {
+          status: 403,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     const body = await req.json();
     const validatedData = gtmStrategySchema.parse(body);

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronRightIcon, MenuIcon } from "lucide-react";
 import config from "@/config";
 import { getRouteByPathname } from "@/lib/routes";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@clerk/nextjs";
 import {
@@ -19,11 +19,34 @@ interface BreadcrumbProps {
   isAdmin: boolean;
 }
 
+interface PlanInfo {
+  plan: "trial" | "pro";
+  usageCount: number;
+  maxCreations: number;
+  isAdmin: boolean;
+}
+
 export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
+
+  useEffect(() => {
+    const loadPlanInfo = async () => {
+      try {
+        const response = await fetch("/api/plan");
+        if (response.ok) {
+          const data = await response.json();
+          setPlanInfo(data);
+        }
+      } catch (err) {
+        console.error("Plan info load error:", err);
+      }
+    };
+    loadPlanInfo();
+  }, []);
 
   const route = getRouteByPathname(pathname);
   const pageName = route?.label || "Dashboard";
@@ -84,9 +107,21 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
                   "User"}
               </p>
               {user?.emailAddresses?.[0]?.emailAddress && (
-                <p className="text-xs text-muted-foreground truncate">
-                  {user.emailAddresses[0].emailAddress}
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs text-muted-foreground truncate">
+                    {user.emailAddresses[0].emailAddress}
+                  </p>
+                  {planInfo && (
+                    <span className={cn(
+                      "px-2 py-0.5 rounded-full text-xs font-medium shrink-0",
+                      planInfo.plan === "pro"
+                        ? "bg-primary/10 text-primary"
+                        : "bg-muted text-muted-foreground"
+                    )}>
+                      {planInfo.plan === "pro" ? "PRO" : "TRIAL"}
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 

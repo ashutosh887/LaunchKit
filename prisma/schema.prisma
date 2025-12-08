@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -34,6 +31,7 @@ model User {
   phoneVerified         Boolean?  @default(false) @map("phone_verified")
   organizationMemberships Json?   @map("organization_memberships")
   role                  String?   @default("user")
+  plan                  String?   @default("trial")
   createdAt             DateTime  @default(now()) @map("created_at")
   updatedAt             DateTime  @updatedAt @map("updated_at")
 
@@ -56,9 +54,9 @@ model ICPAnalysis {
   url               String
   productDescription String? @map("product_description")
   targetRegion      String? @map("target_region")
-  status            String   @default("pending") // pending, completed, failed, retrying
+  status            String   @default("pending")
   scrapedContent    Json?    @map("scraped_content")
-  icpResult         Json?    @map("icp_result") // Full ICP analysis result
+  icpResult         Json?    @map("icp_result")
   primaryICP        String?  @map("primary_icp")
   confidenceScore   Float?   @map("confidence_score")
   errorMessage      String?  @map("error_message")
@@ -74,7 +72,7 @@ model ICPAnalysis {
 model Settings {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String   @unique @map("user_id") @db.ObjectId
-  aiProvider        String   @default("openai") @map("ai_provider") // openai, anthropic
+  aiProvider        String   @default("openai") @map("ai_provider")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 
@@ -85,9 +83,9 @@ model GTMStrategy {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId
   userId            String?  @map("user_id") @db.ObjectId
   icpAnalysisId     String   @map("icp_analysis_id") @db.ObjectId
-  gtmResult         Json     @map("gtm_result") // Full GTM strategy result
-  messagingResult   Json?    @map("messaging_result") // One-line messaging result
-  checklistResult   Json?    @map("checklist_result") // Action checklist result
+  gtmResult         Json     @map("gtm_result")
+  messagingResult   Json?    @map("messaging_result")
+  checklistResult   Json?    @map("checklist_result")
   createdAt         DateTime @default(now()) @map("created_at")
   updatedAt         DateTime @updatedAt @map("updated_at")
 

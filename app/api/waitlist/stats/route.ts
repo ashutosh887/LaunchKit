@@ -25,7 +25,6 @@ export async function GET() {
     const last7DaysStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const last30DaysStart = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    // Get all counts
     const [
       totalEntries,
       entriesToday,
@@ -44,7 +43,6 @@ export async function GET() {
       }),
     ]);
 
-    // Get waitlist growth data (last 30 days)
     const growthData = [];
     for (let i = 29; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
@@ -66,7 +64,6 @@ export async function GET() {
       });
     }
 
-    // Get daily signups (last 7 days)
     const dailySignups = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
@@ -88,7 +85,6 @@ export async function GET() {
       });
     }
 
-    // Get recent entries
     const recentEntries = await prisma.waitlistEntry.findMany({
       orderBy: { createdAt: "desc" },
       take: 10,

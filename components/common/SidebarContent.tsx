@@ -1,20 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import config from "@/config";
 import { useUser, SignOutButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
+import { useState, useEffect } from "react";
 
 interface SidebarContentProps {
   isAdmin: boolean;
 }
 
+interface PlanInfo {
+  plan: "trial" | "pro";
+  usageCount: number;
+  maxCreations: number;
+  isAdmin: boolean;
+}
+
 export function SidebarContent({ isAdmin }: SidebarContentProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { user } = useUser();
+  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
+
+  useEffect(() => {
+    const loadPlanInfo = async () => {
+      try {
+        const response = await fetch("/api/plan");
+        if (response.ok) {
+          const data = await response.json();
+          setPlanInfo(data);
+        }
+      } catch (err) {
+        console.error("Plan info load error:", err);
+      }
+    };
+    loadPlanInfo();
+  }, []);
 
   const filteredRoutes = config.routes.filter((route) => {
     if (route.href === "/settings") {
@@ -73,6 +98,22 @@ export function SidebarContent({ isAdmin }: SidebarContentProps) {
             <SettingsIcon className="w-4 h-4 text-muted-foreground hover:text-foreground" />
           </Link>
         </div>
+
+        {planInfo && (
+          <Link
+            href="/settings"
+            className="mb-3 block"
+          >
+            <div className={cn(
+              "w-full px-3 py-2 rounded-md text-xs font-medium text-center transition-colors cursor-pointer",
+              planInfo.plan === "pro"
+                ? "bg-primary/10 text-primary hover:bg-primary/20"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
+            )}>
+              {planInfo.plan === "pro" ? "PRO" : "TRIAL"} PLAN
+            </div>
+          </Link>
+        )}
 
         <SignOutButton redirectUrl="/">
           <Button

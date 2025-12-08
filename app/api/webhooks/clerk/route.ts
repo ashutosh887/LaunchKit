@@ -86,9 +86,9 @@ export async function POST(req: Request) {
       const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
       const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
       const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
-      const role = adminEmails.includes(email.toLowerCase())
-        ? "admin"
-        : config.roles.default;
+      const isAdmin = adminEmails.includes(email.toLowerCase());
+      const role = isAdmin ? "admin" : config.roles.default;
+      const plan = isAdmin ? "pro" : "trial";
 
       const userData = {
         clerkId: id,
@@ -115,6 +115,7 @@ export async function POST(req: Request) {
         phoneVerified: phoneVerified || false,
         organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
         role: role,
+        plan: plan,
       };
 
       if (email) {
@@ -176,9 +177,9 @@ export async function POST(req: Request) {
       const emailVerified = email_addresses?.[0]?.verification?.status === "verified";
       const phoneVerified = phone_numbers?.[0]?.verification?.status === "verified";
       const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
-      const role = adminEmails.includes(email.toLowerCase())
-        ? "admin"
-        : config.roles.default;
+      const isAdmin = adminEmails.includes(email.toLowerCase());
+      const role = isAdmin ? "admin" : config.roles.default;
+      const plan = isAdmin ? "pro" : "trial";
 
       const userData = {
         email: email,
@@ -204,6 +205,7 @@ export async function POST(req: Request) {
         phoneVerified: phoneVerified || false,
         organizationMemberships: (organization_memberships ? (organization_memberships as unknown as Prisma.InputJsonValue) : null),
         role: role,
+        plan: plan,
       };
 
       const existingUser = await prisma.user.findUnique({

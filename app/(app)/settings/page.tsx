@@ -12,9 +12,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CheckCircle2, Save, AlertCircle } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { CheckCircle2, Save, AlertCircle, Mail, Twitter, Crown } from "lucide-react";
+import config from "@/config";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 type AIProvider = "openai" | "anthropic";
+
+interface PlanInfo {
+  plan: "trial" | "pro";
+  usageCount: number;
+  maxCreations: number;
+  isAdmin: boolean;
+}
 
 export default function SettingsPage() {
   const [aiProvider, setAiProvider] = useState<AIProvider>("openai");
@@ -23,9 +39,11 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
 
   useEffect(() => {
     loadSettings();
+    loadPlanInfo();
   }, []);
 
   const loadSettings = async () => {
@@ -52,6 +70,18 @@ export default function SettingsPage() {
       setError(err instanceof Error ? err.message : "Failed to load settings");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadPlanInfo = async () => {
+    try {
+      const response = await fetch("/api/plan");
+      if (response.ok) {
+        const data = await response.json();
+        setPlanInfo(data);
+      }
+    } catch (err) {
+      console.error("Plan info load error:", err);
     }
   };
 
@@ -160,6 +190,100 @@ export default function SettingsPage() {
                   <p className="text-sm font-medium">Model preference saved successfully</p>
                 </div>
               )}
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                    <Crown className="h-4 w-4 md:h-5 md:w-5" />
+                    Plan & Usage
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {planInfo && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium">Current Plan</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs text-muted-foreground capitalize">{planInfo.plan === "pro" ? "Pro" : "Trial"} Plan</span>
+                            <span className={cn(
+                              "px-2 py-0.5 rounded-full text-xs font-medium",
+                              planInfo.plan === "pro"
+                                ? "bg-primary/10 text-primary"
+                                : "bg-muted text-muted-foreground"
+                            )}>
+                              {planInfo.plan === "pro" ? "PRO" : "TRIAL"}
+                            </span>
+                          </div>
+                        </div>
+                        {planInfo.isAdmin && (
+                          <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                            Admin
+                          </span>
+                        )}
+                      </div>
+                      {!planInfo.isAdmin && planInfo.maxCreations > 0 && (
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">Usage</p>
+                            <p className="text-sm text-muted-foreground">
+                              {planInfo.usageCount} / {planInfo.maxCreations}
+                            </p>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-2">
+                            <div
+                              className="bg-primary h-2 rounded-full transition-all"
+                              style={{
+                                width: `${Math.min((planInfo.usageCount / planInfo.maxCreations) * 100, 100)}%`,
+                              }}
+                            />
+                          </div>
+                          {planInfo.usageCount >= planInfo.maxCreations && (
+                            <p className="text-xs text-destructive">
+                              You&apos;ve reached the limit of {planInfo.maxCreations} creations on the trial plan.
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg md:text-xl">Support</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Need help or want to upgrade your plan? Reach out to our support team.
+                  </p>
+                  <div className="space-y-3">
+                    <a
+                      href={`mailto:${config.support.email}`}
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors"
+                    >
+                      <Mail className="h-5 w-5 text-primary shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">Email Support</p>
+                        <p className="text-xs text-muted-foreground truncate">{config.support.email}</p>
+                      </div>
+                    </a>
+                    <Link
+                      href={config.social.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors"
+                    >
+                      <Twitter className="h-5 w-5 text-primary shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium">Reach out on X</p>
+                        <p className="text-xs text-muted-foreground">@launchkitapp</p>
+                      </div>
+                    </Link>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>

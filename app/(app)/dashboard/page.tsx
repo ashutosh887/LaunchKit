@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { DashboardSkeleton } from "@/components/common/DashboardSkeleton";
 import { LoadingState } from "@/components/common/LoadingState";
 import { PageContainer } from "@/components/common/PageContainer";
