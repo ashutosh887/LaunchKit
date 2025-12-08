@@ -33,7 +33,8 @@ export async function getOrCreateUser(clerkUserId?: string) {
     });
 
     if (dbUser) {
-      if (dbUser.clerkId !== userId) {
+      const needsUpdate = dbUser.clerkId !== userId || dbUser.plan !== plan;
+      if (needsUpdate) {
         dbUser = await prisma.user.update({
           where: { id: dbUser.id },
           data: { clerkId: userId, plan: plan },
@@ -66,10 +67,14 @@ export async function getOrCreateUser(clerkUserId?: string) {
           where: { email },
         });
         if (dbUser) {
-          if (dbUser.clerkId !== userId) {
+          const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
+          const isAdmin = dbUser.email && adminEmails.includes(dbUser.email.toLowerCase());
+          const correctPlan = isAdmin ? "pro" : (dbUser.plan || "trial");
+          const needsUpdate = dbUser.clerkId !== userId || dbUser.plan !== correctPlan;
+          if (needsUpdate) {
             dbUser = await prisma.user.update({
               where: { id: dbUser.id },
-              data: { clerkId: userId },
+              data: { clerkId: userId, plan: correctPlan },
             });
           }
           return dbUser;

@@ -327,7 +327,6 @@ export async function GET(req: Request) {
       take: limit,
     });
 
-    // If includeDetails is true, fetch icpAnalysis for each strategy
     const strategiesWithDetails = includeDetails
       ? await Promise.all(
           strategies.map(async (s) => {

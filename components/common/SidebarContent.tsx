@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import config from "@/config";
 import { useUser, SignOutButton } from "@clerk/nextjs";
@@ -9,24 +9,27 @@ import { Button } from "@/components/ui/button";
 import { LogOutIcon, SettingsIcon } from "lucide-react";
 import { useState, useEffect } from "react";
 
-interface SidebarContentProps {
-  isAdmin: boolean;
-}
-
 interface PlanInfo {
   plan: "trial" | "pro";
   usageCount: number;
   maxCreations: number;
-  isAdmin: boolean;
 }
 
-export function SidebarContent({ isAdmin }: SidebarContentProps) {
+interface SidebarContentProps {
+  isAdmin: boolean;
+  initialPlanInfo: PlanInfo | null;
+}
+
+export function SidebarContent({ isAdmin, initialPlanInfo }: SidebarContentProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const { user } = useUser();
-  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
+  const [planInfo, setPlanInfo] = useState<PlanInfo>(
+    initialPlanInfo || { plan: "trial", usageCount: 0, maxCreations: 3 }
+  );
 
   useEffect(() => {
+    if (!user?.id || initialPlanInfo) return;
+    
     const loadPlanInfo = async () => {
       try {
         const response = await fetch("/api/plan");
@@ -35,11 +38,12 @@ export function SidebarContent({ isAdmin }: SidebarContentProps) {
           setPlanInfo(data);
         }
       } catch (err) {
-        console.error("Plan info load error:", err);
+        console.error("Failed to load plan info:", err);
       }
     };
+    
     loadPlanInfo();
-  }, []);
+  }, [user?.id, initialPlanInfo]);
 
   const filteredRoutes = config.routes.filter((route) => {
     if (route.href === "/settings") {
@@ -99,21 +103,19 @@ export function SidebarContent({ isAdmin }: SidebarContentProps) {
           </Link>
         </div>
 
-        {planInfo && (
-          <Link
-            href="/settings"
-            className="mb-3 block"
-          >
-            <div className={cn(
-              "w-full px-3 py-2 rounded-md text-xs font-medium text-center transition-colors cursor-pointer",
-              planInfo.plan === "pro"
-                ? "bg-primary/10 text-primary hover:bg-primary/20"
-                : "bg-muted text-muted-foreground hover:bg-muted/80"
-            )}>
-              {planInfo.plan === "pro" ? "PRO" : "TRIAL"} PLAN
-            </div>
-          </Link>
-        )}
+        <Link
+          href="/settings"
+          className="mb-3 block"
+        >
+          <div className={cn(
+            "w-full px-3 py-2 rounded-md text-xs font-medium text-center transition-colors cursor-pointer",
+            planInfo.plan === "pro"
+              ? "bg-primary/10 text-primary hover:bg-primary/20"
+              : "bg-muted text-muted-foreground hover:bg-muted/80"
+          )}>
+            {planInfo.plan === "pro" ? "PRO" : "TRIAL"} PLAN
+          </div>
+        </Link>
 
         <SignOutButton redirectUrl="/">
           <Button

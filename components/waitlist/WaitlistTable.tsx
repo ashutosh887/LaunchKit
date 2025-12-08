@@ -156,7 +156,6 @@ export function WaitlistTable({ data }: { data: WaitlistEntry[] }) {
     const selectedIds = selectedRows.map((row) => row.original.id);
     if (selectedIds.length === 0) return;
     if (confirm(`Delete ${selectedIds.length} selected entries?`)) {
-      console.log("Delete:", selectedIds);
     }
   };
 

@@ -58,7 +58,6 @@ export default function ActionChecklistPage() {
   const [icpAnalyses, setIcpAnalyses] = useState<ICPAnalysis[]>([]);
   const [selectedIcpId, setSelectedIcpId] = useState<string>("");
   const [selectedIcp, setSelectedIcp] = useState<ICPAnalysis | null>(null);
-  const [strategy, setStrategy] = useState<GTMStrategy | null>(null);
   const [checklist, setChecklist] = useState<any>(null);
   const [allStrategies, setAllStrategies] = useState<GTMStrategy[]>([]);
   const [strategiesOpen, setStrategiesOpen] = useState(false);
@@ -94,7 +93,6 @@ export default function ActionChecklistPage() {
       fetchStrategy(selectedIcpId);
     } else if (!selectedIcpId) {
       setSelectedIcp(null);
-      setStrategy(null);
       setChecklist(null);
       setFetchingStrategy(false);
     }
@@ -158,14 +156,12 @@ export default function ActionChecklistPage() {
         const data = await response.json();
         if (data.strategies && data.strategies.length > 0) {
           const strategy = data.strategies[0];
-          setStrategy(strategy);
-          if (strategy.checklistResult) {
+          if (strategy?.checklistResult) {
             setChecklist(strategy.checklistResult);
           } else {
             setChecklist(null);
           }
         } else {
-          setStrategy(null);
           setChecklist(null);
         }
       }
@@ -500,7 +496,6 @@ export default function ActionChecklistPage() {
                   className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer transition-colors group"
                   onClick={() => {
                     setSelectedIcpId(s.icpAnalysisId);
-                    setStrategy(s);
                     if (s.checklistResult) {
                       setChecklist(s.checklistResult);
                     }

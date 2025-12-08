@@ -125,6 +125,12 @@ export async function POST(req: Request) {
 
         if (existingByEmail) {
           if (existingByEmail.clerkId === id) {
+            if (isAdmin && existingByEmail.plan !== "pro") {
+              await prisma.user.update({
+                where: { email },
+                data: { plan: "pro" },
+              });
+            }
             return new Response("User already exists", { status: 200 });
           }
 
@@ -230,10 +236,17 @@ export async function POST(req: Request) {
         return new Response("User created successfully", { status: 200 });
       }
 
-      await prisma.user.update({
+      const updatedUser = await prisma.user.update({
         where: { clerkId: id },
         data: userData,
       });
+
+      if (isAdmin && updatedUser.plan !== "pro") {
+        await prisma.user.update({
+          where: { clerkId: id },
+          data: { plan: "pro" },
+        });
+      }
 
       return new Response("User updated successfully", { status: 200 });
     }

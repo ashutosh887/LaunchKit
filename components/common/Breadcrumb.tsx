@@ -15,25 +15,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-interface BreadcrumbProps {
-  isAdmin: boolean;
-}
-
 interface PlanInfo {
   plan: "trial" | "pro";
   usageCount: number;
   maxCreations: number;
-  isAdmin: boolean;
 }
 
-export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
+interface BreadcrumbProps {
+  isAdmin: boolean;
+  initialPlanInfo: PlanInfo | null;
+}
+
+export function Breadcrumb({ isAdmin, initialPlanInfo }: BreadcrumbProps) {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useUser();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null);
+  const [planInfo, setPlanInfo] = useState<PlanInfo>(
+    initialPlanInfo || { plan: "trial", usageCount: 0, maxCreations: 3 }
+  );
 
   useEffect(() => {
+    if (!user?.id || initialPlanInfo) return;
+    
     const loadPlanInfo = async () => {
       try {
         const response = await fetch("/api/plan");
@@ -42,11 +46,12 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
           setPlanInfo(data);
         }
       } catch (err) {
-        console.error("Plan info load error:", err);
+        console.error("Failed to load plan info:", err);
       }
     };
+    
     loadPlanInfo();
-  }, []);
+  }, [user?.id, initialPlanInfo]);
 
   const route = getRouteByPathname(pathname);
   const pageName = route?.label || "Dashboard";
@@ -68,7 +73,6 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
 
   return (
     <>
-      {/* Desktop Breadcrumb - hidden on mobile */}
       <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
         <Link
           href="/dashboard"
@@ -80,7 +84,6 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
         <span className="text-foreground font-medium">{pageName}</span>
       </div>
 
-      {/* Mobile Navigation - visible on mobile */}
       <div className="md:hidden flex items-center gap-2 min-w-0 flex-1">
         <DropdownMenu open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <DropdownMenuTrigger asChild>
@@ -98,7 +101,6 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
             align="start"
             className="w-[280px] max-h-[calc(100vh-5rem)] overflow-y-auto"
           >
-            {/* User Info Section */}
             <div className="px-2 py-3 border-b border-border">
               <p className="text-sm font-semibold truncate">
                 {user?.fullName ||
@@ -111,21 +113,18 @@ export function Breadcrumb({ isAdmin }: BreadcrumbProps) {
                   <p className="text-xs text-muted-foreground truncate">
                     {user.emailAddresses[0].emailAddress}
                   </p>
-                  {planInfo && (
-                    <span className={cn(
-                      "px-2 py-0.5 rounded-full text-xs font-medium shrink-0",
-                      planInfo.plan === "pro"
-                        ? "bg-primary/10 text-primary"
-                        : "bg-muted text-muted-foreground"
-                    )}>
-                      {planInfo.plan === "pro" ? "PRO" : "TRIAL"}
-                    </span>
-                  )}
+                  <span className={cn(
+                    "px-2 py-0.5 rounded-full text-xs font-medium shrink-0",
+                    planInfo.plan === "pro"
+                      ? "bg-primary/10 text-primary"
+                      : "bg-muted text-muted-foreground"
+                  )}>
+                    {planInfo.plan === "pro" ? "PRO" : "TRIAL"}
+                  </span>
                 </div>
               )}
             </div>
 
-            {/* Navigation Routes */}
             <div className="py-1">
               {filteredRoutes.map((item) => {
                 const Icon = item.icon;

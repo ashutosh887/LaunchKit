@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { checkIsAdmin } from "@/lib/auth";
 import config from "@/config";
 
 export type PlanType = "trial" | "pro";
@@ -8,7 +7,6 @@ export interface PlanInfo {
   plan: PlanType;
   usageCount: number;
   maxCreations: number;
-  isAdmin: boolean;
 }
 
 export async function getUserPlanInfo(userId: string | null): Promise<PlanInfo> {
@@ -17,54 +15,72 @@ export async function getUserPlanInfo(userId: string | null): Promise<PlanInfo> 
       plan: "trial",
       usageCount: 0,
       maxCreations: config.plans.trial.maxCreations,
-      isAdmin: false,
     };
   }
 
-  const isAdmin = await checkIsAdmin(userId);
+  try {
+    const user = await (prisma as any).user.findUnique({
+      where: { id: userId },
+    });
 
-  if (isAdmin) {
+    if (!user) {
+      return {
+        plan: "trial",
+        usageCount: 0,
+        maxCreations: config.plans.trial.maxCreations,
+      };
+    }
+
+    const userEmail = (user as any).email as string | null | undefined;
+    const adminEmails = config.roles.admin.map((e) => e.toLowerCase());
+    const isAdmin = userEmail && adminEmails.includes(userEmail.toLowerCase());
+
+    let plan: PlanType = "trial";
+    if (isAdmin) {
+      plan = "pro";
+      if ((user as any).plan !== "pro") {
+        await (prisma as any).user.update({
+          where: { id: userId },
+          data: { plan: "pro" },
+        }).catch(() => {});
+      }
+    } else {
+      const dbPlan = (user as any).plan as string | null | undefined;
+      if (dbPlan === "pro" || dbPlan === "trial") {
+        plan = dbPlan as PlanType;
+      }
+    }
+
+    const maxCreations = plan === "pro" ? config.plans.pro.maxCreations : config.plans.trial.maxCreations;
+
+    const [icpCount, gtmCount] = await Promise.all([
+      prisma.iCPAnalysis.count({
+        where: { userId },
+      }),
+      prisma.gTMStrategy.count({
+        where: { userId },
+      }),
+    ]);
+
+    const usageCount = icpCount + gtmCount;
+
     return {
-      plan: "pro",
+      plan,
+      usageCount,
+      maxCreations,
+    };
+  } catch (error) {
+    console.error("Error fetching plan info:", error);
+    return {
+      plan: "trial",
       usageCount: 0,
-      maxCreations: -1,
-      isAdmin: true,
+      maxCreations: config.plans.trial.maxCreations,
     };
   }
-
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { plan: true },
-  });
-
-  const plan: PlanType = (user?.plan as PlanType) || "trial";
-  const maxCreations = plan === "pro" ? config.plans.pro.maxCreations : config.plans.trial.maxCreations;
-
-  const [icpCount, gtmCount] = await Promise.all([
-    prisma.iCPAnalysis.count({
-      where: { userId },
-    }),
-    prisma.gTMStrategy.count({
-      where: { userId },
-    }),
-  ]);
-
-  const usageCount = icpCount + gtmCount;
-
-  return {
-    plan,
-    usageCount,
-    maxCreations,
-    isAdmin: false,
-  };
 }
 
 export async function canCreateContent(userId: string | null): Promise<{ canCreate: boolean; reason?: string }> {
   const planInfo = await getUserPlanInfo(userId);
-
-  if (planInfo.isAdmin) {
-    return { canCreate: true };
-  }
 
   if (planInfo.maxCreations === -1) {
     return { canCreate: true };

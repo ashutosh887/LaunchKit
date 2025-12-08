@@ -5,6 +5,7 @@ import { getUserPlanInfo } from "@/lib/plan";
 export async function GET() {
   try {
     const user = await currentUser();
+    
     if (!user?.id) {
       return new Response(
         JSON.stringify({ error: "Unauthorized" }),
@@ -17,10 +18,20 @@ export async function GET() {
 
     const dbUser = await prisma.user.findUnique({
       where: { clerkId: user.id },
+      select: { id: true },
     });
 
-    const userId = dbUser?.id || null;
-    const planInfo = await getUserPlanInfo(userId);
+    if (!dbUser) {
+      return new Response(
+        JSON.stringify({ error: "User not found in database" }),
+        {
+          status: 404,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const planInfo = await getUserPlanInfo(dbUser.id);
 
     return new Response(
       JSON.stringify(planInfo),
@@ -32,7 +43,10 @@ export async function GET() {
   } catch (error) {
     console.error("Plan info error:", error);
     return new Response(
-      JSON.stringify({ error: "Failed to fetch plan information" }),
+      JSON.stringify({ 
+        error: "Failed to fetch plan information",
+        details: error instanceof Error ? error.message : "Unknown error"
+      }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },

@@ -13,7 +13,7 @@ function parseAIResponse(text: string): any {
   try {
     const jsonText = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     return JSON.parse(jsonText);
-  } catch (error) {
+  } catch {
     throw new Error("Invalid JSON response from AI");
   }
 }
