@@ -1,61 +1,53 @@
-export const ICP_ANALYSIS_PROMPT = `You are an expert ICP (Ideal Customer Profile) analyst with deep experience in B2B SaaS and early-stage startups. Your analysis will directly inform go-to-market strategy, so accuracy and specificity are critical.
-
-Analyze the provided website content and return a comprehensive ICP analysis. Base your analysis strictly on evidence from the content provided—infer only when strongly implied, and note uncertainty in your confidence score.
+export const ICP_ANALYSIS_PROMPT = `You are an expert ICP analyst. Your analysis determines whether founders get their first customer or waste months targeting wrong people. Be evidence-based, actionable, and psychologically accurate.
 
 Website Content:
 {scrapedContent}
 
 {additionalContext}
 
-Return ONLY valid JSON with the following structure (no markdown, no code blocks, no explanations):
+Return ONLY valid JSON (no markdown, no code blocks):
 
 {
   "primaryICP": {
-    "role": "e.g., Founders / Head of Ops / Marketing Lead",
+    "role": "e.g., SaaS founders at 5-20 person companies",
     "companySize": "e.g., 5-20 employees",
-    "industry": "e.g., SaaS / Agencies / Productized services",
-    "geography": "e.g., Primarily US, English-speaking",
+    "industry": "e.g., B2B SaaS / Marketing agencies / Productized services",
+    "geography": "e.g., Primarily US and Canada, English-speaking",
     "budget": "e.g., $50-$300/month"
   },
   "painPoints": [
-    "Spends too much time manually doing X...",
-    "No visibility into Y...",
-    "Struggles to coordinate Z..."
+    "I waste 5+ hours/week manually [specific task] because [specific reason]",
+    "I have no visibility into [specific metric] which causes [specific consequence]",
+    "I struggle to [specific challenge] which leads to [specific negative outcome]"
   ],
   "jobsToBeDone": [
-    "Know at a glance what their team is working on",
-    "Reduce time spent in status meetings",
-    "Feel confident nothing is slipping"
+    "Feel confident that [specific outcome] without [specific friction]",
+    "Achieve [specific goal] in [specific timeframe] without [specific barrier]",
+    "Avoid [specific negative outcome] while [specific positive action]"
   ],
   "whereTheyHangOut": [
-    "Twitter",
-    "r/SaaS",
-    "Indie Hackers",
-    "LinkedIn",
-    "Slack communities"
+    "r/SaaS (actively posts about [specific topic])",
+    "Indie Hackers forum (seeks advice on [specific challenge])",
+    "Twitter #buildinpublic (shares [specific content type])",
+    "LinkedIn (engages with [specific type] of content)"
   ],
   "messagingFixes": [
     {
-      "current": "What your website says now (short snippet)",
-      "improved": "What you should say instead"
+      "current": "Exact quote or close paraphrase from website",
+      "improved": "Pain-first, outcome-focused, ICP-specific alternative"
     }
   ],
   "confidenceScore": 85
 }
 
-Analysis guidelines:
-- primaryICP: Be specific and narrow (e.g., "SaaS founders at 5-20 person companies" not "Businesses"). If unclear, choose the most likely target based on content.
-- painPoints: 3-5 items. Each should be urgent, specific, and emotionally resonant. Format as first-person statements (e.g., "I waste 5 hours/week on manual data entry"). Prioritize pains that the product directly solves.
-- jobsToBeDone: 3-5 items. Focus on functional and emotional jobs (what they're trying to accomplish, not just what they're doing). Use action-oriented language (e.g., "Feel confident in decision-making" not "Confidence").
-- whereTheyHangOut: 3-7 items. Be specific with platform names and communities (e.g., "r/SaaS", "Indie Hackers forum", "Twitter #buildinpublic"). Prioritize places where they actively engage, not just visit.
-- messagingFixes: 2-4 items. "current" should be an exact or paraphrased snippet from the website. "improved" should be pain-first, outcome-focused, and ICP-specific. Focus on the highest-impact messaging issues.
-- confidenceScore: 0-100. Higher if content is explicit about ICP, lower if you're inferring. Consider: How clear is the target? How specific is the content? How much inference is required?
+Requirements:
+- PRIMARY ICP: Be ruthlessly specific. Not "founders" but "SaaS founders who've raised <$500K, pre-PMF". Not "small businesses" but "5-20 person B2B SaaS with $100K-$2M ARR". Infer budget from pricing/use cases.
+- PAIN POINTS: First-person, present tense, specific/measurable. Include time cost, emotional cost, business impact. Rank by urgency. Quality: Would ICP say "YES, that's me"?
+- JOBS TO BE DONE: Functional (what they accomplish), Emotional (how they feel), Social (how perceived). Format: "Feel [emotion] when [outcome] without [friction]".
+- WHERE THEY HANG OUT: Hyper-specific. Not "LinkedIn" but "LinkedIn groups for [role] discussing [topic]". Prioritize places they ACTIVELY ENGAGE (post/comment), not lurk.
+- MESSAGING FIXES: Current = exact quote. Improved = pain-first, outcome-focused, ICP-specific. Focus homepage hero/value prop.
+- CONFIDENCE SCORE: 90-100=explicitly stated, 70-89=strongly implied, 50-69=some inference, 30-49=significant inference, 0-29=mostly assumptions.
 
-Quality standards:
-- Be specific and actionable (avoid generic statements)
-- Base analysis on actual content provided, not assumptions
-- If content is insufficient, note it in confidenceScore (lower score)
-- Use concrete examples from the content when possible
-- Prioritize clarity and precision over completeness
+Quality checks: Specificity (competitor-proof?), Actionability (founder can use?), Evidence (traceable to content?), Uniqueness (competitors miss this?).
 
-Return ONLY the JSON object. No markdown formatting, no code blocks, no explanations, no additional commentary.`;
+Return ONLY JSON. No markdown, no code blocks, no explanations.`;

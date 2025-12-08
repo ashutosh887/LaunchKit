@@ -1,6 +1,4 @@
-export const GTM_STRATEGY_PROMPT = `You are an expert GTM operator for early-stage startups with a track record of helping founders get their first paying customers quickly.
-
-Your job is to generate a complete Go-To-Market strategy that helps the founder get their FIRST paying user within 48 hours. Focus on channels and tactics that have the highest probability of conversion in the shortest time.
+export const GTM_STRATEGY_PROMPT = `You are a GTM operator helping startups get first paying customers in 48 hours. Strategy must be speed-optimized, founder-executable (no agency/budget/team), psychologically sound, and competitively differentiated.
 
 Product:
 {PRODUCT_NAME}
@@ -10,81 +8,81 @@ Product:
 ICP:
 {ICP_JSON}
 
-Return ONLY the JSON below (no other text, no markdown, no code blocks):
+Return ONLY JSON (no markdown, no code blocks):
 
 {
-  "gtm_summary": "",
-
+  "gtm_summary": "2-3 sentence strategic overview explaining fastest path to first customer",
   "top_channels_ranked": [
     {
-      "channel": "",
-      "why_it_matters": "",
-      "expected_results": "",
-      "difficulty": ""
+      "channel": "e.g., LinkedIn DM outreach to [specific title] at [specific companies]",
+      "why_it_matters": "Why fastest for THIS ICP (reference ICP data)",
+      "expected_results": "e.g., '20 DMs → 5 responses → 2 demos → 1 customer'",
+      "difficulty": "easy" | "medium" | "hard"
     }
   ],
-
   "48_hour_plan": {
-    "day_1": ["", "", ""],
-    "day_2": ["", "", ""]
+    "day_1": [
+      "Hour 1-2: [Specific action with exact numbers/targets]",
+      "Hour 3-4: [Specific action with exact numbers/targets]",
+      "Hour 5-6: [Specific action with exact numbers/targets]"
+    ],
+    "day_2": [
+      "Hour 1-2: [Action building on day 1]",
+      "Hour 3-4: [Action building on day 1]",
+      "Hour 5-6: [Action building on day 1]"
+    ]
   },
-
   "messaging": {
-    "primary_value_prop": "",
-    "one_line_pitch": "",
-    "email_subject_lines": ["", "", ""],
-    "linkedin_openers": ["", "", ""],
-    "reddit_post_hooks": ["", "", ""],
-    "twitter_hooks": ["", "", ""]
+    "primary_value_prop": "One sentence making ICP think 'I need this'",
+    "one_line_pitch": "8-12 words, pain-first, outcome-focused",
+    "email_subject_lines": ["4-8 words, curiosity/benefit", "", ""],
+    "linkedin_openers": ["1-2 sentences, personalized, value-first", "", ""],
+    "reddit_post_hooks": ["1 sentence, community-appropriate", "", ""],
+    "twitter_hooks": ["1 sentence, hook-driven", "", ""]
   },
-
   "ideal_targets": {
-    "titles": ["", ""],
-    "industries": ["", ""],
-    "communities": ["", ""],
-    "search_queries": ["", ""]
+    "titles": ["Exact job titles from ICP", ""],
+    "industries": ["Specific industries from ICP", ""],
+    "communities": ["Exact communities from ICP", ""],
+    "search_queries": ["Specific searches they'd use", ""]
   },
-
   "outreach_templates": {
-    "cold_email": "",
-    "linkedin_dm": "",
-    "reddit_post": "",
-    "twitter_pitch": ""
+    "cold_email": "Under 150 words, conversational, pain-first",
+    "linkedin_dm": "Under 100 words, personalized, value-first, no pitch",
+    "reddit_post": "Community-appropriate, value-first",
+    "twitter_pitch": "Under 280 chars, hook-driven"
   },
-
   "launch_assets": {
-    "landing_page_headline": "",
-    "landing_page_subheadline": "",
-    "product_hunt_tagline": "",
-    "twitter_bio": ""
+    "landing_page_headline": "8-12 words, pain-first, ICP-specific",
+    "landing_page_subheadline": "12-18 words, outcome-focused",
+    "product_hunt_tagline": "One line making people want to upvote",
+    "twitter_bio": "Under 160 chars, value-focused, ICP-specific"
   },
-
-  "risks_and_missteps": ["", ""],
-
+  "risks_and_missteps": [
+    "Specific risk + how to avoid",
+    "Common mistake + how to prevent"
+  ],
   "success_metrics": {
-    "first_48_hours": ["", ""],
-    "first_7_days": ["", ""]
+    "first_48_hours": ["e.g., '5 qualified conversations'", "e.g., '2 demo requests'"],
+    "first_7_days": ["e.g., '1 paying customer'", "e.g., '10 qualified leads'"]
   }
 }
 
-Critical requirements:
-- Rank channels by speed-to-first-customer (fastest first), not just effectiveness
-- "difficulty" should be: "easy", "medium", or "hard" based on time/skill required
-- 48_hour_plan tasks must be specific, actionable, and time-boxed (e.g., "Send 20 personalized LinkedIn DMs to [specific title] at [specific companies]")
-- All messaging must be direct, pain-first, and outcome-focused (lead with the problem, not the solution)
-- Outreach templates must be under 150 words, conversational, and founder-friendly (no corporate speak)
-- Email subject lines should be 4-8 words, curiosity-driven or benefit-focused
-- LinkedIn openers should be 1-2 sentences, personalized, and value-first
-- Reddit/Twitter hooks should be 1 sentence, community-appropriate, and engagement-focused
-- Launch assets should be conversion-optimized and ICP-specific
-- Risks should be realistic blockers that could derail the 48-hour goal
-- Success metrics should be measurable and achievable (e.g., "5 qualified conversations", "2 demo requests")
+Requirements:
+- CHANNELS: Rank by speed-to-first-customer. #1 = highest conversion probability in shortest time. Consider: Where ICP actively engages? Buying intent? Trust-building speed? Avoid channels needing setup/budget/team.
+- 48-HOUR PLAN: Day 1 AM = setup + quick wins. Day 1 PM = first outreach wave. Day 2 AM = follow-up + second channel. Day 2 PM = optimize. Every task: exact numbers, specific targets, success criteria.
+- MESSAGING: Value prop = lead with ICP's #1 pain, show outcome. One-liner = works anywhere. Email subjects = curiosity > benefit. LinkedIn = reference them specifically, offer value, no pitch. Reddit/Twitter = community-appropriate, authentic.
+- TARGETS: Titles = exact from ICP (not generic). Industries = specific from ICP. Communities = exact names. Search queries = what ICP would Google when they have the problem.
+- TEMPLATES: Email = Hook (pain) → Bridge (I noticed) → Value → CTA. LinkedIn = Personal → Value → Soft ask. Reddit = Problem → Solution → Ask feedback. Twitter = Hook → Value → Question.
+- ASSETS: Headline = stop scroll, immediate value. Subheadline = expand + specificity. PH tagline = upvote-worthy. Bio = value + ICP-specific + CTA.
+- RISKS: What derails 48h goal? How to avoid? Examples: "Perfecting messaging → Ship first, iterate" | "Wrong ICP → Validate with 3 conversations".
+- METRICS: 48h = leading indicators (conversations, demos). 7d = lagging (customers, revenue). Must be specific/measurable/achievable.
 
-Return ONLY valid JSON. No markdown formatting, no code blocks, no explanations, no additional commentary.`;
+Quality: Specificity (competitor-proof?), Actionability (executable now?), Speed (fastest path?), Evidence (connects to ICP?).
 
-export const ONE_LINE_MESSAGING_PROMPT = `You are a world-class positioning expert specializing in high-conversion messaging for early-stage startups.
+Return ONLY JSON. No markdown, no code blocks, no explanations.`;
 
-Using the ICP + GTM strategy below, generate three extremely short, high-conversion messaging lines founders can immediately use. Each line should be optimized for maximum clarity and impact.
+export const ONE_LINE_MESSAGING_PROMPT = `You are a positioning expert. Messaging must stop scroll, create urgency, build trust, drive action.
 
 ICP:
 {ICP_JSON}
@@ -92,7 +90,7 @@ ICP:
 GTM:
 {GTM_JSON}
 
-Return ONLY this JSON (no markdown, no code blocks, no explanations):
+Return ONLY JSON (no markdown, no code blocks):
 
 {
   "landing_page_headline": "",
@@ -100,67 +98,66 @@ Return ONLY this JSON (no markdown, no code blocks, no explanations):
   "dm_opener": ""
 }
 
-Strict rules:
-- Exactly 9–13 words per line (count carefully)
-- Pain-first: Start with the problem or frustration, not the solution
-- Outcome-driven: Focus on the result/benefit, not features
-- No buzzwords: Avoid "revolutionary", "game-changing", "cutting-edge", "AI-powered" (unless AI is the core value)
-- Specific over generic: Use concrete language (e.g., "Save 10 hours/week" not "Save time")
-- landing_page_headline: Should stop the scroll and immediately communicate value
-- value_prop_one_liner: Should work in any context (email, pitch, bio)
-- dm_opener: Should be conversational, personalized, and create curiosity
+Requirements:
+- HEADLINE (9-13 words): [ICP's #1 Pain] → [Outcome] → [Timeframe]. Quality: Would ICP think "YES, that's me"? Avoid generic/features/buzzwords.
+- VALUE PROP (9-13 words): [Pain] → [Solution] → [Outcome]. Works in email/Twitter/pitch. Quality: Communicates value anywhere? Avoid jargon/abstract.
+- DM OPENER (9-13 words): [Personal connection] → [Value offer] → [Question]. Conversational, personalized, value-first (no pitch). Quality: Would you respond? Avoid salesy/generic.
 
-Return ONLY valid JSON. No markdown formatting, no code blocks, no explanations.`;
+Principles: Loss aversion ("Stop losing" > "Save"), Specificity ("10 hours/week" > "time"), Social proof, Urgency, Pain-first, Outcome-focused.
 
-export const ACTION_CHECKLIST_PROMPT = `You are a GTM execution specialist. Transform the GTM Plan into a simple, actionable checklist that founders can execute immediately. Every task should be crystal clear and immediately doable.
+Word count: Exactly 9-13 words. Under 9 = add specificity. Over 13 = remove filler.
+
+Quality checks: Specificity (ICP-specific?), Actionability (makes them act?), Clarity (12yo understands?), Uniqueness (competitor-proof?).
+
+Return ONLY JSON. No markdown, no code blocks, no explanations.`;
+
+export const ACTION_CHECKLIST_PROMPT = `You are a GTM execution specialist. Tasks must be immediately executable, quantifiable, prioritized, realistic (≤30min each).
 
 Input:
 {GTM_JSON}
 
-Return ONLY this JSON (no markdown, no code blocks, no explanations):
+Return ONLY JSON (no markdown, no code blocks):
 
 {
   "today": [
-    "Specific action..."
+    "Hour 1-2: [Action with exact numbers/targets/success criteria]",
+    "Hour 3-4: [Action with exact numbers/targets/success criteria]",
+    "Hour 5-6: [Action with exact numbers/targets/success criteria]"
   ],
   "tomorrow": [
-    "Specific action..."
+    "Hour 1-2: [Action building on today]",
+    "Hour 3-4: [Action building on today]",
+    "Hour 5-6: [Action building on today]"
   ],
   "high_impact_actions": [
-    "3 tasks with fastest path to customer"
+    "3 tasks most likely to result in paying customer (ranked by probability)",
+    "",
+    ""
   ],
   "nice_to_have": [
-    "Optional tasks"
+    "Optimization tasks that can wait until after first customer",
+    ""
   ]
 }
 
-Execution rules:
-- Every task must be completable in ≤ 30 minutes (if longer, break it down)
-- Must be quantifiable and specific (e.g., "Send 15 personalized LinkedIn DMs to [title] at [companies]" not "Do outreach")
-- Include exact numbers, targets, and criteria (e.g., "Post in 3 relevant subreddits: r/SaaS, r/entrepreneur, r/startups")
-- "today" should prioritize highest-impact, fastest-to-execute tasks
-- "tomorrow" should build on today's momentum
-- "high_impact_actions" should be the 3 tasks most likely to result in a paying customer
-- "nice_to_have" should be optimization tasks that can wait
-- Each task should be a complete action (founder should know exactly what to do, where, and how many)
+Requirements:
+- TODAY: AM = setup + quick wins. Midday = first outreach wave. PM = second channel + follow-up. Every task: exact numbers, targets, success criteria.
+- TOMORROW: AM = follow-up + optimize. Midday = second channel + scale. PM = close + prepare.
+- HIGH IMPACT: Rank by probability × speed. Must be specific/quantifiable/executable. Example: "Send 20 LinkedIn DMs → 5 responses → 2 demos → 1 customer".
+- NICE TO HAVE: Wait until after first customer. Examples: A/B test, analytics, content calendar.
 
-Return ONLY valid JSON. No markdown formatting, no code blocks, no explanations.`;
+Quality standards: Specificity (exact targets), Quantifiability (numbers), Actionability (clear steps), Time-boxing (≤30min), Success criteria (measurable outcomes).
 
-export const ICP_CARD_PROMPT = `You are designing a compact, visually appealing ICP summary card for founders to share on LinkedIn or Twitter. The card should be professional, scannable, and immediately communicate value.
+Avoid: Vague tasks, no numbers, no targets, too complex.
 
-Use the ICP JSON below:
+Return ONLY JSON. No markdown, no code blocks, no explanations.`;
 
+export const ICP_CARD_PROMPT = `Design a shareable ICP card for LinkedIn/Twitter. Must stop scroll, build credibility, drive action, be shareable.
+
+ICP:
 {ICP_JSON}
 
-Generate a summary card with the following specifications:
-- Product name (clear and concise)
-- ICP one-liner (8-12 words, specific role + company type)
-- Top 3 pain points (each 5-8 words, most urgent first)
-- Messaging hook (1 sentence, 10-15 words, conversion-focused)
-- 3 places this ICP hangs out (specific communities/platforms)
-- Footer: "Generated by LaunchKit 🚀"
-
-Return ONLY this JSON (no markdown, no code blocks, no explanations):
+Return ONLY JSON (no markdown, no code blocks):
 
 {
   "card_title": "",
@@ -171,11 +168,15 @@ Return ONLY this JSON (no markdown, no code blocks, no explanations):
   "footer": "Generated by LaunchKit 🚀"
 }
 
-Content guidelines:
-- card_title: Should include product name, keep it short and memorable
-- icp_line: Should be specific (e.g., "SaaS founders at 5-20 person companies" not "Startups")
-- pain_points: Should be urgent, relatable, and specific (avoid generic problems)
-- messaging_hook: Should be the most compelling one-liner that would make this ICP stop scrolling
-- where_they_hangout: Should be specific communities/platforms (e.g., "r/SaaS", "Indie Hackers Slack", "Twitter #buildinpublic")
+Requirements:
+- TITLE: "[Product Name] ICP" or "[Product Name] - [Key Benefit]". Short, memorable, brandable. Avoid generic/long.
+- ICP LINE (8-12 words): [Role] + [Company Type] + [Differentiator]. Quality: ICP-specific? Must include role/size/industry.
+- PAIN POINTS (3 items, 5-8 words each): First-person, present tense, specific/measurable. Rank by urgency. Quality: Would ICP say "YES, that's me"?
+- MESSAGING HOOK (10-15 words): [Pain] → [Solution] → [Outcome]. Most compelling one-liner. Quality: Makes ICP want to learn more? Avoid generic/features/buzzwords.
+- WHERE THEY HANG OUT (3 items): Platform + specific context. Must be from ICP analysis. Include subreddits/forums/Slack/Twitter/LinkedIn. Quality: Founder can find ICPs here?
 
-Return ONLY valid JSON. No markdown formatting, no code blocks, no explanations.`;
+Principles: Specificity, Urgency, Emotion, Social proof, Loss aversion.
+
+Quality checks: Specificity (competitor-proof?), Actionability (helps find customers?), Clarity (understandable?), Uniqueness (competitors miss this?).
+
+Return ONLY JSON. No markdown, no code blocks, no explanations.`;
