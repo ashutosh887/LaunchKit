@@ -46,9 +46,6 @@ const config = {
   social: {
     twitter: "https://x.com/launchkitapp",
   },
-  support: {
-    email: "ashutoshj887@gmail.com",
-  },
   plans: {
     trial: {
       maxCreations: 3,

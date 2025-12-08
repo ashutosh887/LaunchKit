@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle2, Save, AlertCircle, Mail, Twitter, Crown } from "lucide-react";
+import { CheckCircle2, Save, AlertCircle, Twitter, Crown } from "lucide-react";
 import config from "@/config";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -126,13 +126,13 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
   return (
     <div className="w-full">
       <div className="max-w-4xl mx-auto">
-        <div className="space-y-4 md:space-y-6">
+        <div className="space-y-6 md:space-y-8">
           <p className="text-sm md:text-base text-muted-foreground">Manage your account settings and preferences</p>
 
           {loading ? (
             <SettingsSkeleton />
           ) : (
-            <div className="space-y-4 md:space-y-5">
+            <div className="space-y-6 md:space-y-8">
               <div className="space-y-2">
                 <Label htmlFor="ai-provider" className="text-sm md:text-base font-semibold">
                   AI Provider
@@ -181,15 +181,15 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                 </p>
               </div>
 
-            {error && (
-              <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
-                <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-                <div className="flex-1">
-                  <p className="font-medium">Error</p>
-                  <p className="text-sm mt-1">{error}</p>
+              {error && (
+                <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
+                  <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
+                  <div className="flex-1">
+                    <p className="font-medium">Error</p>
+                    <p className="text-sm mt-1">{error}</p>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
               {saved && !error && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary">
@@ -205,7 +205,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                     Plan & Usage
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-5">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium">Current Plan</p>
@@ -252,34 +252,22 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                 <CardHeader>
                   <CardTitle className="text-lg md:text-xl">Support</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Need help or want to upgrade your plan? Reach out to our support team.
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Need help or want to upgrade your plan? Reach out to us on X.
                   </p>
-                  <div className="space-y-3">
-                    <a
-                      href={`mailto:${config.support.email}`}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors"
-                    >
-                      <Mail className="h-5 w-5 text-primary shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">Email Support</p>
-                        <p className="text-xs text-muted-foreground truncate">{config.support.email}</p>
-                      </div>
-                    </a>
-                    <Link
-                      href={config.social.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border hover:bg-accent transition-colors"
-                    >
-                      <Twitter className="h-5 w-5 text-primary shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium">Reach out on X</p>
-                        <p className="text-xs text-muted-foreground">@launchkitapp</p>
-                      </div>
-                    </Link>
-                  </div>
+                  <Link
+                    href={config.social.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-4 rounded-lg border border-border hover:bg-accent transition-colors"
+                  >
+                    <Twitter className="h-5 w-5 text-primary shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium">Reach out on X</p>
+                      <p className="text-xs text-muted-foreground">@launchkitapp</p>
+                    </div>
+                  </Link>
                 </CardContent>
               </Card>
             </div>
