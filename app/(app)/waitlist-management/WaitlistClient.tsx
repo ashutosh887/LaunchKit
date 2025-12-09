@@ -28,6 +28,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { WaitlistTable } from "@/components/waitlist/WaitlistTable";
+import { formatTimeAgo, formatDate } from "@/lib/utils/date";
 
 interface WaitlistStats {
   totalEntries: number;
@@ -85,26 +86,6 @@ export function WaitlistClient({ entries }: WaitlistClientProps) {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    });
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  };
 
   return (
     <div className="w-full">
@@ -114,10 +95,10 @@ export function WaitlistClient({ entries }: WaitlistClientProps) {
             <p className="text-muted-foreground">View and manage all waitlist signups</p>
             <button
               onClick={fetchStats}
-              className="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
+              className="flex items-center justify-center p-2 bg-muted hover:bg-muted/80 rounded-md transition-colors"
+              aria-label="Refresh stats"
             >
               <RefreshCw className="h-4 w-4" />
-              Refresh
             </button>
           </div>
 

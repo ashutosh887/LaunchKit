@@ -29,6 +29,7 @@ import {
   Download,
   Share2
 } from "lucide-react";
+import { formatTimeAgo } from "@/lib/utils/date";
 import { exportICPToExcel, exportICPHistoryToExcel } from "@/lib/excel-export";
 
 interface ICPResult {
@@ -244,19 +245,6 @@ export default function ICPAutoScraperPage() {
     navigator.clipboard.writeText(text);
   };
 
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min${diffMins > 1 ? "s" : ""} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
-    return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
-  };
 
   const allHistory = [...history, ...localHistory.filter(h => !history.find(ah => ah.id === h.id))]
     .sort((a, b) => {
