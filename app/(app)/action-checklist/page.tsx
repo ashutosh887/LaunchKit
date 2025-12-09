@@ -23,7 +23,6 @@ import {
   CheckSquare,
   Download,
   Sparkles,
-  AlertCircle,
   Target,
   ExternalLink,
   Clock,
@@ -32,6 +31,8 @@ import {
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { EmptyState } from "@/components/common/EmptyState";
 import { formatTimeAgo } from "@/lib/utils/date";
 import { exportChecklistToExcel } from "@/lib/excel-export";
 
@@ -276,15 +277,7 @@ export default function ActionChecklistPage() {
             </div>
           )}
 
-          {error && (
-            <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
-              <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-              <div className="flex-1">
-                <p className="font-medium">Error</p>
-                <p className="text-sm mt-1">{error}</p>
-              </div>
-            </div>
-          )}
+          {error && <ErrorMessage message={error} />}
 
           {selectedIcpId && !checklist && !fetchingStrategy && (
             <Button
@@ -524,30 +517,16 @@ export default function ActionChecklistPage() {
           )}
 
           {icpAnalyses.length === 0 && (
-            <Card>
-              <CardContent className="pt-6">
-                <div className="text-center py-12 space-y-4">
-                  <div className="inline-flex p-4 rounded-full bg-muted">
-                    <CheckSquare className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold mb-2">
-                      No ICP Records Found
-                    </h3>
-                    <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                      You need to create an ICP analysis first. Go to the ICP
-                      Auto-Scraper page and analyze your website.
-                    </p>
-                    <Button asChild>
-                      <a href="/icp-auto-scraper">
-                        <Sparkles className="h-4 w-4 mr-2" />
-                        Create ICP Analysis
-                      </a>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <EmptyState
+              icon={CheckSquare}
+              title="No ICP Records Found"
+              description="You need to create an ICP analysis first. Go to the ICP Auto-Scraper page and analyze your website."
+              action={{
+                label: "Create ICP Analysis",
+                href: "/icp-auto-scraper",
+                icon: Sparkles,
+              }}
+            />
           )}
         </div>
       </LoadingState>

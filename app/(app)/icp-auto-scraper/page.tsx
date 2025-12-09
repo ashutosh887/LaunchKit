@@ -30,6 +30,8 @@ import {
   Share2
 } from "lucide-react";
 import { formatTimeAgo } from "@/lib/utils/date";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
+import { EmptyState } from "@/components/common/EmptyState";
 import { exportICPToExcel, exportICPHistoryToExcel } from "@/lib/excel-export";
 
 interface ICPResult {
@@ -364,15 +366,7 @@ export default function ICPAutoScraperPage() {
                 </div>
               </div>
 
-              {error && (
-                <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
-                  <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-medium">Error</p>
-                    <p className="text-sm mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
+              {error && <ErrorMessage message={error} />}
 
               <Button
                 type="submit"
@@ -771,19 +765,11 @@ export default function ICPAutoScraperPage() {
           )}
 
           {!loading && !result && allHistory.length === 0 && (
-            <div className="py-12 text-center">
-              <div className="max-w-md mx-auto space-y-3">
-                <div className="inline-flex p-3 rounded-full bg-muted">
-                  <Sparkles className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="text-base font-semibold mb-1.5">No ICPs yet</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Paste your first URL above to get started with AI-powered ICP analysis
-                  </p>
-                </div>
-              </div>
-            </div>
+            <EmptyState
+              icon={Sparkles}
+              title="No ICPs yet"
+              description="Paste your first URL above to get started with AI-powered ICP analysis"
+            />
           )}
         </div>
       </div>

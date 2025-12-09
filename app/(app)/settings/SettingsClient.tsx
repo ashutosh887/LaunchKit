@@ -18,7 +18,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { CheckCircle2, Save, AlertCircle, Twitter, Crown } from "lucide-react";
+import { CheckCircle2, Save, Twitter, Crown } from "lucide-react";
+import { ErrorMessage } from "@/components/common/ErrorMessage";
 import config from "@/config";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -181,15 +182,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                 </p>
               </div>
 
-              {error && (
-                <div className="flex items-start gap-2 p-4 rounded-lg bg-destructive/10 text-destructive">
-                  <AlertCircle className="h-5 w-5 mt-0.5 shrink-0" />
-                  <div className="flex-1">
-                    <p className="font-medium">Error</p>
-                    <p className="text-sm mt-1">{error}</p>
-                  </div>
-                </div>
-              )}
+              {error && <ErrorMessage message={error} />}
 
               {saved && !error && (
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-primary/10 text-primary">

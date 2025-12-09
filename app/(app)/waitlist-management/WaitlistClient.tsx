@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import {
   Card,
   CardContent,
@@ -29,6 +28,7 @@ import {
 } from "recharts";
 import { WaitlistTable } from "@/components/waitlist/WaitlistTable";
 import { formatTimeAgo, formatDate } from "@/lib/utils/date";
+import { LoadingState } from "@/components/common/LoadingState";
 
 interface WaitlistStats {
   totalEntries: number;
@@ -102,11 +102,12 @@ export function WaitlistClient({ entries }: WaitlistClientProps) {
             </button>
           </div>
 
-          {loading ? (
-            <div className="flex items-center justify-center min-h-[200px]">
-              <LoadingSpinner message="Loading stats..." />
-            </div>
-          ) : stats ? (
+          <LoadingState
+            isLoading={loading}
+            message="Loading stats..."
+            minHeight="min-h-[200px]"
+          >
+            {stats ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="bg-linear-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
@@ -274,7 +275,12 @@ export function WaitlistClient({ entries }: WaitlistClientProps) {
                 </Card>
               )}
             </>
-          ) : null}
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">Failed to load waitlist stats</p>
+              </div>
+            )}
+          </LoadingState>
 
           <Card>
             <CardHeader>
