@@ -168,14 +168,14 @@ export function AdminDashboardClient() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-linear-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20">
+            <Card className="bg-linear-to-br from-blue-500/10 to-blue-500/5 border-blue-500/20 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Users className="h-4 w-4" />
                   Total Users
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col justify-between">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">{stats.totalUsers}</span>
                   <span className="text-sm text-muted-foreground">
@@ -189,14 +189,14 @@ export function AdminDashboardClient() {
               </CardContent>
             </Card>
 
-            <Card className="bg-linear-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20">
+            <Card className="bg-linear-to-br from-purple-500/10 to-purple-500/5 border-purple-500/20 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
                   ICP Analyses
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col justify-between">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">{stats.totalICPAnalyses}</span>
                   <span className="text-sm text-muted-foreground">
@@ -209,14 +209,14 @@ export function AdminDashboardClient() {
               </CardContent>
             </Card>
 
-            <Card className="bg-linear-to-br from-green-500/10 to-green-500/5 border-green-500/20">
+            <Card className="bg-linear-to-br from-green-500/10 to-green-500/5 border-green-500/20 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   GTM Strategies
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col justify-between">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">{stats.totalGTMStrategies}</span>
                   <span className="text-sm text-muted-foreground">
@@ -226,14 +226,14 @@ export function AdminDashboardClient() {
               </CardContent>
             </Card>
 
-            <Card className="bg-linear-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20">
+            <Card className="bg-linear-to-br from-orange-500/10 to-orange-500/5 border-orange-500/20 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
                   <Mail className="h-4 w-4" />
                   Waitlist Entries
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex flex-col justify-between">
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl font-bold">{stats.totalWaitlistEntries}</span>
                   <span className="text-sm text-muted-foreground">

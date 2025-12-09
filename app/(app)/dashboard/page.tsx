@@ -79,58 +79,58 @@ export default function DashboardPage() {
           <p className="text-sm md:text-base text-muted-foreground">Overview of your activity and generated content</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Card className="bg-primary/5">
+            <Card className="bg-primary/5 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   ICP Analyses
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex items-center">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
-                  <span className="text-2xl md:text-3xl font-bold">{stats.icpAnalysesCount}</span>
+                  <Sparkles className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-3xl font-bold">{stats.icpAnalysesCount}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-primary/10">
+            <Card className="bg-primary/10 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   GTM Strategies
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex items-center">
                 <div className="flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
-                  <span className="text-2xl md:text-3xl font-bold">{stats.gtmStrategiesCount}</span>
+                  <TrendingUp className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-3xl font-bold">{stats.gtmStrategiesCount}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-primary/5">
+            <Card className="bg-primary/5 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Messaging Variants
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex items-center">
                 <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
-                  <span className="text-2xl md:text-3xl font-bold">{stats.messagingCount}</span>
+                  <MessageSquare className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-3xl font-bold">{stats.messagingCount}</span>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-primary/10">
+            <Card className="bg-primary/10 h-full flex flex-col">
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   Action Checklists
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex-1 flex items-center">
                 <div className="flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0" />
-                  <span className="text-2xl md:text-3xl font-bold">{stats.checklistsCount}</span>
+                  <CheckSquare className="h-5 w-5 text-primary shrink-0" />
+                  <span className="text-3xl font-bold">{stats.checklistsCount}</span>
                 </div>
               </CardContent>
             </Card>
