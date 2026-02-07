@@ -9,8 +9,7 @@ import { MobileBottomBar } from "@/components/common/MobileBottomBar";
 import { MobileHeaderActions } from "@/components/common/MobileHeaderActions";
 import { AuthGuard } from "@/components/auth/AuthGuard";
 import { auth } from "@clerk/nextjs/server";
-import { getPlanInfoFromUser } from "@/lib/plan";
-import { prisma } from "@/lib/prisma";
+import { getDbUserByClerkId } from "@/lib/cached-user";
 
 export default async function AppLayout({
   children,
@@ -20,16 +19,12 @@ export default async function AppLayout({
   const { userId } = await auth();
   
   let isAdmin = false;
-  let initialPlanInfo: Awaited<ReturnType<typeof getPlanInfoFromUser>> | null = null;
+  const initialPlanInfo = null;
 
   if (userId) {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: userId },
-      select: { id: true, email: true, plan: true },
-    });
+    const dbUser = await getDbUserByClerkId(userId);
     if (dbUser) {
       isAdmin = !!(dbUser.email && config.roles.admin.map((e) => e.toLowerCase()).includes(dbUser.email.toLowerCase()));
-      initialPlanInfo = await getPlanInfoFromUser(dbUser);
     }
   }
 
