@@ -6,18 +6,14 @@ import OpenAI from "openai";
 import { ICP_CARD_PROMPT } from "@/prompts/gtm-strategy";
 import { getUserAISettings } from "@/lib/ai-settings";
 import { lyzrChat } from "@/lib/lyzr";
+import { safeParseJson } from "@/lib/json-parse";
 
 const icpCardSchema = z.object({
   icpAnalysisId: z.string(),
 });
 
 function parseAIResponse(text: string): any {
-  try {
-    const jsonText = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-    return JSON.parse(jsonText);
-  } catch {
-    throw new Error("Invalid JSON response from AI");
-  }
+  return safeParseJson(text);
 }
 
 async function generateWithOpenAI(prompt: string): Promise<any> {

@@ -8,6 +8,7 @@ import { Prisma } from "@prisma/client";
 import { ICP_ANALYSIS_PROMPT } from "@/prompts/icp-analysis";
 import { getUserAISettings } from "@/lib/ai-settings";
 import { lyzrChat } from "@/lib/lyzr";
+import { safeParseJson } from "@/lib/json-parse";
 
 interface ICPResult {
   primaryICP: {
@@ -160,8 +161,7 @@ function buildPrompt(
 }
 
 function parseAIResponse(text: string): ICPResult {
-  const jsonText = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-  return JSON.parse(jsonText) as ICPResult;
+  return safeParseJson<ICPResult>(text);
 }
 
 async function analyzeWithOpenAI(
