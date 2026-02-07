@@ -31,9 +31,11 @@ export function HeroSection() {
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-xl mx-auto">
             {config.home.hero.subtitle}
           </p>
-          <p className="text-xs sm:text-sm text-muted-foreground/80 max-w-md mx-auto">
-            {config.home.hero.modesNote}
-          </p>
+          {config.home.hero.modesNote && (
+            <p className="text-xs sm:text-sm text-muted-foreground/80 max-w-md mx-auto">
+              {config.home.hero.modesNote}
+            </p>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 sm:pt-4">

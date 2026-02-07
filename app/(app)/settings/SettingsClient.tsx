@@ -33,16 +33,30 @@ interface PlanInfo {
   maxCreations: number;
 }
 
-interface SettingsClientProps {
-  initialPlanInfo: PlanInfo | null;
+interface InitialSettings {
+  aiMode: string;
+  aiProvider: string;
 }
 
-export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
-  const [aiMode, setAiMode] = useState<AIMode>("direct");
-  const [aiProvider, setAiProvider] = useState<AIProvider>("openai");
-  const [originalMode, setOriginalMode] = useState<AIMode>("direct");
-  const [originalProvider, setOriginalProvider] = useState<AIProvider>("openai");
-  const [loading, setLoading] = useState(true);
+interface SettingsClientProps {
+  initialPlanInfo: PlanInfo | null;
+  initialSettings?: InitialSettings | null;
+}
+
+export function SettingsClient({ initialPlanInfo, initialSettings }: SettingsClientProps) {
+  const [aiMode, setAiMode] = useState<AIMode>(
+    (initialSettings?.aiMode === "agent" ? "agent" : "direct") as AIMode
+  );
+  const [aiProvider, setAiProvider] = useState<AIProvider>(
+    (initialSettings?.aiProvider === "anthropic" ? "anthropic" : "openai") as AIProvider
+  );
+  const [originalMode, setOriginalMode] = useState<AIMode>(
+    (initialSettings?.aiMode === "agent" ? "agent" : "direct") as AIMode
+  );
+  const [originalProvider, setOriginalProvider] = useState<AIProvider>(
+    (initialSettings?.aiProvider === "anthropic" ? "anthropic" : "openai") as AIProvider
+  );
+  const [loading, setLoading] = useState(!initialSettings);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,11 +65,13 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
   );
 
   useEffect(() => {
-    loadSettings();
+    if (!initialSettings) {
+      loadSettings();
+    }
     if (!initialPlanInfo) {
       loadPlanInfo();
     }
-  }, [initialPlanInfo]);
+  }, [initialSettings, initialPlanInfo]);
 
   const loadSettings = async () => {
     try {

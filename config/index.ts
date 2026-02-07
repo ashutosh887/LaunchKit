@@ -61,7 +61,7 @@ const config = {
   home: {
     hero: {
       subtitle: "Get your first paying customer in 48 hours with AI-powered ICP analysis, GTM strategies, and actionable checklists.",
-      modesNote: "Direct API or Agent mode—choose in Settings.",
+      modesNote: "",
       cta: {
         primary: "Get Started",
         secondary: "Join Waitlist",
