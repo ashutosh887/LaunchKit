@@ -66,6 +66,7 @@ model ICPAnalysis {
 
   @@index([userId])
   @@index([status])
+  @@index([userId, status])
   @@map("icp_analyses")
 }
 
