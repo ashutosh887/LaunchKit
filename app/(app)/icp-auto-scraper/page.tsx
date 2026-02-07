@@ -630,7 +630,7 @@ export default function ICPAutoScraperPage() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Share2 className="h-5 w-5 text-primary" />
-                    Sharable ICP Card
+                    Shareable ICP Card
                   </CardTitle>
                   <Button
                     variant="ghost"

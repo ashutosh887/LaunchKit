@@ -13,7 +13,6 @@ import {
 } from "@tanstack/react-table";
 import { useState, useMemo } from "react";
 import {
-  Table,
   TableBody,
   TableCell,
   TableHead,

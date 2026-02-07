@@ -294,6 +294,7 @@ export async function POST(req: Request) {
         url = urlObj.toString();
       }
     } catch {
+      // Keep url as-is if normalization fails (e.g. edge-case URL format)
     }
 
     const analysis = await prisma.iCPAnalysis.create({
