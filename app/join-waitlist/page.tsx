@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import config from "@/config";
+import { ProjectNameWithBadge } from "@/components/common/ProjectNameWithBadge";
 
 const waitlistSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -76,16 +77,16 @@ export default function WaitlistPage() {
 
   const handleReferClick = () => {
     const subject = encodeURIComponent(
-      `Check out ${config.projectName} - ${config.projectDescription}`
+      `Check out ${config.projectNameWithVersion} - ${config.projectDescription}`
     );
     const body = encodeURIComponent(
-      `Hey! I found this amazing tool called ${config.projectName}. Thought you might be interested!\n\n${config.projectDescription}\n\nCheck it out: ${typeof window !== "undefined" ? window.location.origin : ""}/join-waitlist`
+      `Hey! I found this amazing tool called ${config.projectNameWithVersion}. Thought you might be interested!\n\n${config.projectDescription}\n\nCheck it out: ${typeof window !== "undefined" ? window.location.origin : ""}/join-waitlist`
     );
     window.open(`mailto:?subject=${subject}&body=${body}`, "_blank");
   };
 
   const handleReportIssue = () => {
-    const subject = encodeURIComponent(`Issue Report - ${config.projectName}`);
+    const subject = encodeURIComponent(`Issue Report - ${config.projectNameWithVersion}`);
     const body = encodeURIComponent(
       "Please describe the issue you encountered:\n\n"
     );
@@ -109,8 +110,8 @@ export default function WaitlistPage() {
                   priority
                 />
               </div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-primary">
-                {config.projectName}
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-primary flex items-center justify-center gap-2">
+                <ProjectNameWithBadge />
               </h2>
             </div>
 

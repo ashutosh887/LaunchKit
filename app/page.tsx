@@ -7,6 +7,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { FeaturesSection } from "@/components/home/FeaturesSection";
 import { XLogo } from "@/components/common/XLogo";
 import config from "@/config";
+import { ProjectNameWithBadge } from "@/components/common/ProjectNameWithBadge";
 
 export default async function Home() {
   const { userId } = await auth();
@@ -16,8 +17,8 @@ export default async function Home() {
     <main className="min-h-screen flex flex-col bg-background">
       <nav className="w-full bg-background/80 backdrop-blur">
         <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-          <h1 className="text-xl sm:text-2xl font-semibold text-primary">
-            {config.projectName}
+          <h1 className="text-xl sm:text-2xl font-semibold text-primary flex items-center gap-2">
+            <ProjectNameWithBadge />
           </h1>
           <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             <Link href={config.social.twitter} target="_blank" rel="noopener noreferrer">

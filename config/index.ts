@@ -22,6 +22,10 @@ type Benefit = {
 
 const config = {
   projectName: "LaunchKit",
+  version: "2.0.0",
+  get projectNameWithVersion() {
+    return `${this.projectName} v${this.version}`;
+  },
   projectDescription: "Ship fast. Get customers faster",
   routes: [
     { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
