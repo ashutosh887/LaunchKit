@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import config from "@/config";
+import { ProjectNameWithBadge } from "@/components/common/ProjectNameWithBadge";
 
 export function HeroSection() {
   return (
@@ -21,8 +22,8 @@ export function HeroSection() {
         </div>
         
         <div className="space-y-3 sm:space-y-4">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary">
-            {config.projectName}
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-primary flex flex-wrap items-center gap-2">
+            <ProjectNameWithBadge />
           </h1>
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
             {config.projectDescription}

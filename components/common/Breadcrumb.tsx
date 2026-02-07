@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChevronRightIcon, MenuIcon } from "lucide-react";
 import config from "@/config";
+import { ProjectNameWithBadge } from "@/components/common/ProjectNameWithBadge";
 import { getRouteByPathname } from "@/lib/routes";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
@@ -78,7 +79,7 @@ export function Breadcrumb({ isAdmin, initialPlanInfo }: BreadcrumbProps) {
           href="/dashboard"
           className="hover:text-foreground transition-colors"
         >
-          {config.projectName}
+          <ProjectNameWithBadge />
         </Link>
         <ChevronRightIcon className="w-4 h-4" />
         <span className="text-foreground font-medium">{pageName}</span>
