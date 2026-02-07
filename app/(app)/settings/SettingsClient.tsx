@@ -299,6 +299,12 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                   </Link>
                 </CardContent>
               </Card>
+
+              {config.version && (
+                <p className="text-xs text-muted-foreground pt-2">
+                  Version {config.version}
+                </p>
+              )}
             </div>
           )}
         </div>
