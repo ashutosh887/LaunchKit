@@ -229,6 +229,7 @@ export async function POST(req: Request) {
         await prisma.settings.create({
           data: {
             userId: newUser.id,
+            aiMode: "direct",
             aiProvider: "openai",
           },
         });

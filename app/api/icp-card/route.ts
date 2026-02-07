@@ -4,6 +4,8 @@ import { currentUser } from "@clerk/nextjs/server";
 import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import { ICP_CARD_PROMPT } from "@/prompts/gtm-strategy";
+import { getUserAISettings } from "@/lib/ai-settings";
+import { lyzrChat } from "@/lib/lyzr";
 
 const icpCardSchema = z.object({
   icpAnalysisId: z.string(),
@@ -82,38 +84,13 @@ async function generateWithClaude(prompt: string): Promise<any> {
   }
 }
 
-async function getUserAIProvider(clerkUserId: string | null): Promise<"openai" | "anthropic"> {
-  if (!clerkUserId) {
-    return "openai";
+async function generateWithLyzr(prompt: string, userId: string): Promise<any> {
+  const agentId = process.env.LYZR_AGENT_ID;
+  if (!agentId) {
+    throw new Error("LYZR_AGENT_ID is not configured. Add it to .env for Agent Mode.");
   }
-
-  try {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: clerkUserId },
-      select: { id: true },
-    });
-
-    if (!dbUser) {
-      return "openai";
-    }
-
-    let settings = await prisma.settings.findUnique({
-      where: { userId: dbUser.id },
-    });
-
-    if (!settings) {
-      settings = await prisma.settings.create({
-        data: {
-          userId: dbUser.id,
-          aiProvider: "openai",
-        },
-      });
-    }
-
-    return (settings.aiProvider as "openai" | "anthropic") || "openai";
-  } catch {
-    return "openai";
-  }
+  const response = await lyzrChat(agentId, prompt, userId);
+  return parseAIResponse(response);
 }
 
 export async function POST(req: Request) {
@@ -136,14 +113,20 @@ export async function POST(req: Request) {
       );
     }
 
-    const aiProvider = await getUserAIProvider(user?.id || null);
+    const aiSettings = await getUserAISettings(user?.id || null);
 
     const icpJson = JSON.stringify(icpAnalysis.icpResult);
     const prompt = ICP_CARD_PROMPT.replace("{ICP_JSON}", icpJson);
 
-    const cardResult = aiProvider === "openai"
-      ? await generateWithOpenAI(prompt)
-      : await generateWithClaude(prompt);
+    let cardResult: any;
+    if (aiSettings.aiMode === "agent") {
+      const agentUserId = user?.primaryEmailAddress?.emailAddress || user?.id || "anonymous";
+      cardResult = await generateWithLyzr(prompt, agentUserId);
+    } else if (aiSettings.aiProvider === "anthropic") {
+      cardResult = await generateWithClaude(prompt);
+    } else {
+      cardResult = await generateWithOpenAI(prompt);
+    }
 
     return new Response(
       JSON.stringify({

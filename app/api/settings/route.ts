@@ -4,7 +4,8 @@ import { z } from "zod";
 import { getOrCreateUser } from "@/lib/user";
 
 const settingsSchema = z.object({
-  aiProvider: z.enum(["openai", "anthropic"]),
+  aiMode: z.enum(["direct", "agent"]).optional(),
+  aiProvider: z.enum(["openai", "anthropic"]).optional(),
 });
 
 export async function GET() {
@@ -27,9 +28,25 @@ export async function GET() {
       settings = await prisma.settings.create({
         data: {
           userId: dbUser.id,
+          aiMode: "direct",
           aiProvider: "openai",
         },
       });
+    } else {
+      // Migrate legacy settings on first Settings page visit: ensure defaults so nothing breaks
+      const needsMigration =
+        settings.aiMode === "llm" ||
+        !settings.aiMode ||
+        !settings.aiProvider;
+      if (needsMigration) {
+        settings = await prisma.settings.update({
+          where: { userId: dbUser.id },
+          data: {
+            aiMode: settings.aiMode === "agent" ? "agent" : "direct",
+            aiProvider: settings.aiProvider || "openai",
+          },
+        });
+      }
     }
 
     return new Response(JSON.stringify({ settings }), {
@@ -70,19 +87,22 @@ export async function PATCH(req: Request) {
       where: { userId: dbUser.id },
     });
 
+    const updateData: { aiMode?: string; aiProvider?: string } = {};
+    if (validatedData.aiMode !== undefined) updateData.aiMode = validatedData.aiMode;
+    if (validatedData.aiProvider !== undefined) updateData.aiProvider = validatedData.aiProvider;
+
     if (!settings) {
       settings = await prisma.settings.create({
         data: {
           userId: dbUser.id,
-          aiProvider: validatedData.aiProvider,
+          aiMode: updateData.aiMode ?? "direct",
+          aiProvider: updateData.aiProvider ?? "openai",
         },
       });
-    } else {
+    } else if (Object.keys(updateData).length > 0) {
       settings = await prisma.settings.update({
         where: { userId: dbUser.id },
-        data: {
-          aiProvider: validatedData.aiProvider,
-        },
+        data: updateData,
       });
     }
 

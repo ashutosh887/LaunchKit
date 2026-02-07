@@ -6,6 +6,8 @@ import OpenAI from "openai";
 import * as cheerio from "cheerio";
 import { Prisma } from "@prisma/client";
 import { ICP_ANALYSIS_PROMPT } from "@/prompts/icp-analysis";
+import { getUserAISettings } from "@/lib/ai-settings";
+import { lyzrChat } from "@/lib/lyzr";
 
 interface ICPResult {
   primaryICP: {
@@ -242,39 +244,16 @@ async function analyzeWithClaude(
   }
 }
 
-async function getUserAIProvider(clerkUserId: string | null): Promise<"openai" | "anthropic"> {
-  if (!clerkUserId) {
-    return "openai";
+async function analyzeWithLyzr(
+  prompt: string,
+  userId: string
+): Promise<ICPResult> {
+  const agentId = process.env.LYZR_AGENT_ID;
+  if (!agentId) {
+    throw new Error("LYZR_AGENT_ID is not configured. Add it to .env for Agent Mode.");
   }
-
-  try {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: clerkUserId },
-      select: { id: true },
-    });
-
-    if (!dbUser) {
-      return "openai";
-    }
-
-    let settings = await prisma.settings.findUnique({
-      where: { userId: dbUser.id },
-    });
-
-    if (!settings) {
-      settings = await prisma.settings.create({
-        data: {
-          userId: dbUser.id,
-          aiProvider: "openai",
-        },
-      });
-    }
-
-    return (settings.aiProvider as "openai" | "anthropic") || "openai";
-  } catch (error) {
-    console.error("Error fetching user settings:", error);
-    return "openai";
-  }
+  const response = await lyzrChat(agentId, prompt, userId);
+  return parseAIResponse(response);
 }
 
 export async function POST(req: Request) {
@@ -330,19 +309,18 @@ export async function POST(req: Request) {
     try {
       const scrapedContent = await scrapeWebsite(url);
 
-      const aiProvider = await getUserAIProvider(user?.id || null);
+      const aiSettings = await getUserAISettings(user?.id || null);
+      const prompt = buildPrompt(scrapedContent, validatedData.productDescription, validatedData.targetRegion);
 
-      const icpResult = aiProvider === "openai"
-        ? await analyzeWithOpenAI(
-            scrapedContent,
-            validatedData.productDescription,
-            validatedData.targetRegion
-          )
-        : await analyzeWithClaude(
-            scrapedContent,
-            validatedData.productDescription,
-            validatedData.targetRegion
-          );
+      let icpResult: ICPResult;
+      if (aiSettings.aiMode === "agent") {
+        const agentUserId = user?.primaryEmailAddress?.emailAddress || user?.id || "anonymous";
+        icpResult = await analyzeWithLyzr(prompt, agentUserId);
+      } else if (aiSettings.aiProvider === "anthropic") {
+        icpResult = await analyzeWithClaude(scrapedContent, validatedData.productDescription, validatedData.targetRegion);
+      } else {
+        icpResult = await analyzeWithOpenAI(scrapedContent, validatedData.productDescription, validatedData.targetRegion);
+      }
 
       const updatedAnalysis = await prisma.iCPAnalysis.update({
         where: { id: analysis.id },

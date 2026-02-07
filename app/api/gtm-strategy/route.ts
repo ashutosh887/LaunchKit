@@ -8,6 +8,8 @@ import {
   ONE_LINE_MESSAGING_PROMPT,
   ACTION_CHECKLIST_PROMPT,
 } from "@/prompts/gtm-strategy";
+import { getUserAISettings } from "@/lib/ai-settings";
+import { lyzrChat } from "@/lib/lyzr";
 
 const gtmStrategySchema = z.object({
   icpAnalysisId: z.string(),
@@ -86,38 +88,13 @@ async function generateWithClaude(prompt: string): Promise<any> {
   }
 }
 
-async function getUserAIProvider(clerkUserId: string | null): Promise<"openai" | "anthropic"> {
-  if (!clerkUserId) {
-    return "openai";
+async function generateWithLyzr(prompt: string, userId: string): Promise<any> {
+  const agentId = process.env.LYZR_AGENT_ID;
+  if (!agentId) {
+    throw new Error("LYZR_AGENT_ID is not configured. Add it to .env for Agent Mode.");
   }
-
-  try {
-    const dbUser = await prisma.user.findUnique({
-      where: { clerkId: clerkUserId },
-      select: { id: true },
-    });
-
-    if (!dbUser) {
-      return "openai";
-    }
-
-    let settings = await prisma.settings.findUnique({
-      where: { userId: dbUser.id },
-    });
-
-    if (!settings) {
-      settings = await prisma.settings.create({
-        data: {
-          userId: dbUser.id,
-          aiProvider: "openai",
-        },
-      });
-    }
-
-    return (settings.aiProvider as "openai" | "anthropic") || "openai";
-  } catch {
-    return "openai";
-  }
+  const response = await lyzrChat(agentId, prompt, userId);
+  return parseAIResponse(response);
 }
 
 export async function POST(req: Request) {
@@ -197,7 +174,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const aiProvider = await getUserAIProvider(user?.id || null);
+    const aiSettings = await getUserAISettings(user?.id || null);
+    const agentUserId = user?.primaryEmailAddress?.emailAddress || user?.id || "anonymous";
 
     const icpJson = JSON.stringify(icpAnalysis.icpResult);
     const productName = icpAnalysis.productDescription || new URL(icpAnalysis.url).hostname;
@@ -210,24 +188,24 @@ export async function POST(req: Request) {
       .replace("{WEBSITE_URL}", websiteUrl)
       .replace("{ICP_JSON}", icpJson);
 
-    const gtmResult = aiProvider === "openai"
-      ? await generateWithOpenAI(gtmPrompt)
-      : await generateWithClaude(gtmPrompt);
+    const generate = aiSettings.aiMode === "agent"
+      ? (p: string) => generateWithLyzr(p, agentUserId)
+      : aiSettings.aiProvider === "anthropic"
+        ? generateWithClaude
+        : generateWithOpenAI;
+
+    const gtmResult = await generate(gtmPrompt);
 
     const messagingPrompt = ONE_LINE_MESSAGING_PROMPT
       .replace("{ICP_JSON}", icpJson)
       .replace("{GTM_JSON}", JSON.stringify(gtmResult));
 
-    const messagingResult = aiProvider === "openai"
-      ? await generateWithOpenAI(messagingPrompt)
-      : await generateWithClaude(messagingPrompt);
+    const messagingResult = await generate(messagingPrompt);
 
     const checklistPrompt = ACTION_CHECKLIST_PROMPT
       .replace("{GTM_JSON}", JSON.stringify(gtmResult));
 
-    const checklistResult = aiProvider === "openai"
-      ? await generateWithOpenAI(checklistPrompt)
-      : await generateWithClaude(checklistPrompt);
+    const checklistResult = await generate(checklistPrompt);
 
     const strategy = await prisma.gTMStrategy.create({
       data: {
