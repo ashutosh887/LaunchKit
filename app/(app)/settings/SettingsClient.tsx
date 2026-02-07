@@ -24,6 +24,7 @@ import config from "@/config";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 
+type AIMode = "direct" | "agent";
 type AIProvider = "openai" | "anthropic";
 
 interface PlanInfo {
@@ -37,7 +38,9 @@ interface SettingsClientProps {
 }
 
 export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
+  const [aiMode, setAiMode] = useState<AIMode>("direct");
   const [aiProvider, setAiProvider] = useState<AIProvider>("openai");
+  const [originalMode, setOriginalMode] = useState<AIMode>("direct");
   const [originalProvider, setOriginalProvider] = useState<AIProvider>("openai");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -67,8 +70,12 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
 
       const data = await response.json();
       if (data.settings) {
-        const provider = data.settings.aiProvider || "openai";
+        const rawMode = data.settings.aiMode;
+        const mode = (rawMode === "agent" ? "agent" : "direct") as AIMode;
+        const provider = (data.settings.aiProvider || "openai") as AIProvider;
+        setAiMode(mode);
         setAiProvider(provider);
+        setOriginalMode(mode);
         setOriginalProvider(provider);
       } else {
         throw new Error("No settings data received");
@@ -103,6 +110,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          aiMode,
           aiProvider,
         }),
       });
@@ -113,6 +121,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
       }
 
       setSaved(true);
+      setOriginalMode(aiMode);
       setOriginalProvider(aiProvider);
       setTimeout(() => setSaved(false), 3000);
     } catch (err) {
@@ -122,7 +131,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
     }
   };
 
-  const hasChanged = aiProvider !== originalProvider;
+  const hasChanged = aiMode !== originalMode || aiProvider !== originalProvider;
 
   return (
     <div className="w-full">
@@ -135,20 +144,20 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
           ) : (
             <div className="space-y-6 md:space-y-8">
               <div className="space-y-2">
-                <Label htmlFor="ai-provider" className="text-sm md:text-base font-semibold">
-                  AI Provider
+                <Label className="text-sm md:text-base font-semibold">
+                  AI Mode
                 </Label>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
                   <Select
-                    value={aiProvider}
-                    onValueChange={(value) => setAiProvider(value as AIProvider)}
+                    value={aiMode}
+                    onValueChange={(value) => setAiMode(value as AIMode)}
                   >
-                    <SelectTrigger id="ai-provider" className="flex-1 h-10 md:h-11 text-sm md:text-base">
-                      <SelectValue placeholder="Select AI provider" />
+                    <SelectTrigger id="ai-mode" className="flex-1 h-10 md:h-11 text-sm md:text-base">
+                      <SelectValue placeholder="Select AI mode" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="openai">OpenAI</SelectItem>
-                      <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
+                      <SelectItem value="direct">Direct (OpenAI/Anthropic)</SelectItem>
+                      <SelectItem value="agent">Agent (Lyzr)</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button
@@ -170,10 +179,36 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save Model Preference
+                        Save
                       </>
                     )}
                   </Button>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {aiMode === "direct"
+                    ? "Direct API calls to OpenAI or Anthropic. Default for all users."
+                    : "Uses your Lyzr AI Agent. Configure LYZR_API_KEY and LYZR_AGENT_ID in .env."}
+                </p>
+              </div>
+
+              {aiMode === "direct" && (
+              <div className="space-y-2">
+                <Label htmlFor="ai-provider" className="text-sm md:text-base font-semibold">
+                  AI Provider (Direct mode)
+                </Label>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <Select
+                    value={aiProvider}
+                    onValueChange={(value) => setAiProvider(value as AIProvider)}
+                  >
+                    <SelectTrigger id="ai-provider" className="flex-1 h-10 md:h-11 text-sm md:text-base">
+                      <SelectValue placeholder="Select AI provider" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="openai">OpenAI</SelectItem>
+                      <SelectItem value="anthropic">Anthropic (Claude)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {aiProvider === "openai"
@@ -181,6 +216,7 @@ export function SettingsClient({ initialPlanInfo }: SettingsClientProps) {
                     : "Uses Anthropic's Claude models for AI-powered features"}
                 </p>
               </div>
+              )}
 
               {error && <ErrorMessage message={error} />}
 
