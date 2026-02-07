@@ -77,7 +77,7 @@ export function SidebarContent({ isAdmin, initialPlanInfo }: SidebarContentProps
         })}
       </div>
 
-      <div className="p-4 border-t border-border bg-background/80">
+      <div className="p-4 bg-background/80">
         <div className="mb-3 flex items-start justify-between gap-2">
           <div className="flex-1">
             <p className="text-sm font-semibold">

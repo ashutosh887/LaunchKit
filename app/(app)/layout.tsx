@@ -36,7 +36,7 @@ export default async function AppLayout({
     <Suspense fallback={null}>
       <AuthGuard>
         <div className="h-screen w-screen flex flex-col bg-background text-foreground overflow-hidden">
-          <div className="h-16 w-full flex items-center justify-between px-4 md:px-6 border-b border-border bg-background/80 backdrop-blur shadow-sm shrink-0">
+          <div className="h-16 w-full flex items-center justify-between px-4 md:px-6 border-b border-border bg-background/80 backdrop-blur shrink-0">
             <div className="flex items-center gap-2 md:gap-4 min-w-0 flex-1">
               <Link href="/dashboard" className="flex items-center shrink-0">
                 <Image
