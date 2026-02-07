@@ -33,7 +33,6 @@ export async function GET() {
         },
       });
     } else {
-      // Migrate legacy settings on first Settings page visit: ensure defaults so nothing breaks
       const needsMigration =
         settings.aiMode === "llm" ||
         !settings.aiMode ||
