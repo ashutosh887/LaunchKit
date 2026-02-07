@@ -63,116 +63,74 @@ export async function GET() {
       }),
     ]);
 
-    const settings = await prisma.settings.findMany({
-      select: { aiProvider: true },
-    });
+    const [
+      settings,
+      userGrowthData,
+      activityData,
+      recentUsers,
+      icpByStatusResult,
+      recentICPs,
+      recentGTMs,
+    ] = await Promise.all([
+      prisma.settings.findMany({ select: { aiProvider: true } }),
+      Promise.all(
+        Array.from({ length: 30 }, async (_, i) => {
+          const date = new Date(now.getTime() - (29 - i) * 24 * 60 * 60 * 1000);
+          const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const dateEnd = new Date(dateStart.getTime() + 24 * 60 * 60 * 1000);
+          const count = await prisma.user.count({
+            where: { createdAt: { gte: dateStart, lt: dateEnd } },
+          });
+          return { date: date.toISOString().split("T")[0], count };
+        })
+      ),
+      Promise.all(
+        Array.from({ length: 7 }, async (_, i) => {
+          const date = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000);
+          const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const dateEnd = new Date(dateStart.getTime() + 24 * 60 * 60 * 1000);
+          const [icp, gtm, waitlist] = await Promise.all([
+            prisma.iCPAnalysis.count({ where: { createdAt: { gte: dateStart, lt: dateEnd } } }),
+            prisma.gTMStrategy.count({ where: { createdAt: { gte: dateStart, lt: dateEnd } } }),
+            prisma.waitlistEntry.count({ where: { createdAt: { gte: dateStart, lt: dateEnd } } }),
+          ]);
+          return { date: date.toISOString().split("T")[0], icp, gtm, waitlist };
+        })
+      ),
+      prisma.user.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 10,
+        select: { id: true, email: true, fullName: true, createdAt: true, lastSignInAt: true },
+      }),
+      Promise.all([
+        prisma.iCPAnalysis.count({ where: { status: "pending" } }),
+        prisma.iCPAnalysis.count({ where: { status: "completed" } }),
+        prisma.iCPAnalysis.count({ where: { status: "failed" } }),
+        prisma.iCPAnalysis.count({ where: { status: "retrying" } }),
+      ]),
+      prisma.iCPAnalysis.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, url: true, status: true, createdAt: true, userId: true },
+      }),
+      prisma.gTMStrategy.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, createdAt: true, userId: true },
+      }),
+    ]);
+
     const modelPreferences = {
       openai: settings.filter((s) => s.aiProvider === "openai").length,
       anthropic: settings.filter((s) => s.aiProvider === "anthropic").length,
     };
 
-    const userGrowthData = [];
-    for (let i = 29; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      const dateEnd = new Date(dateStart.getTime() + 24 * 60 * 60 * 1000);
-      
-      const count = await prisma.user.count({
-        where: {
-          createdAt: {
-            gte: dateStart,
-            lt: dateEnd,
-          },
-        },
-      });
-      
-      userGrowthData.push({
-        date: date.toISOString().split("T")[0],
-        count,
-      });
-    }
-
-    const activityData = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
-      const dateStart = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      const dateEnd = new Date(dateStart.getTime() + 24 * 60 * 60 * 1000);
-      
-      const [icpCount, gtmCount, waitlistCount] = await Promise.all([
-        prisma.iCPAnalysis.count({
-          where: {
-            createdAt: {
-              gte: dateStart,
-              lt: dateEnd,
-            },
-          },
-        }),
-        prisma.gTMStrategy.count({
-          where: {
-            createdAt: {
-              gte: dateStart,
-              lt: dateEnd,
-            },
-          },
-        }),
-        prisma.waitlistEntry.count({
-          where: {
-            createdAt: {
-              gte: dateStart,
-              lt: dateEnd,
-            },
-          },
-        }),
-      ]);
-      
-      activityData.push({
-        date: date.toISOString().split("T")[0],
-        icp: icpCount,
-        gtm: gtmCount,
-        waitlist: waitlistCount,
-      });
-    }
-
-    const recentUsers = await prisma.user.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 10,
-      select: {
-        id: true,
-        email: true,
-        fullName: true,
-        createdAt: true,
-        lastSignInAt: true,
-      },
-    });
-
-    const icpByStatus = await Promise.all([
-      prisma.iCPAnalysis.count({ where: { status: "pending" } }),
-      prisma.iCPAnalysis.count({ where: { status: "completed" } }),
-      prisma.iCPAnalysis.count({ where: { status: "failed" } }),
-      prisma.iCPAnalysis.count({ where: { status: "retrying" } }),
-    ]);
-
-    const recentICPs = await prisma.iCPAnalysis.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        id: true,
-        url: true,
-        status: true,
-        createdAt: true,
-        userId: true,
-      },
-    });
-
-    const recentGTMs = await prisma.gTMStrategy.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
-      select: {
-        id: true,
-        createdAt: true,
-        userId: true,
-      },
-    });
+    const icpByStatus = {
+      pending: icpByStatusResult[0],
+      completed: icpByStatusResult[1],
+      failed: icpByStatusResult[2],
+      retrying: icpByStatusResult[3],
+    };
 
     return new Response(
       JSON.stringify({
@@ -191,12 +149,7 @@ export async function GET() {
         userGrowthData,
         activityData,
         recentUsers,
-        icpByStatus: {
-          pending: icpByStatus[0],
-          completed: icpByStatus[1],
-          failed: icpByStatus[2],
-          retrying: icpByStatus[3],
-        },
+        icpByStatus,
         recentICPs,
         recentGTMs,
       }),
