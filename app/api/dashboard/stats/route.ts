@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { currentUser } from "@clerk/nextjs/server";
+import { getDashboardStats } from "@/lib/dashboard-stats";
 
 export async function GET() {
   try {
@@ -33,65 +34,19 @@ export async function GET() {
       );
     }
 
-    const [icpAnalysesCount, gtmStrategies, recentICPs, recentStrategies] =
-      await Promise.all([
-        prisma.iCPAnalysis.count({
-          where: {
-            userId: dbUser.id,
-            status: "completed",
-          },
-        }),
-        prisma.gTMStrategy.findMany({
-          where: { userId: dbUser.id },
-          select: {
-            id: true,
-            messagingResult: true,
-            checklistResult: true,
-            createdAt: true,
-          },
-        }),
-        prisma.iCPAnalysis.findMany({
-          where: {
-            userId: dbUser.id,
-            status: "completed",
-          },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-          select: {
-            id: true,
-            url: true,
-            primaryICP: true,
-            confidenceScore: true,
-            createdAt: true,
-          },
-        }),
-        prisma.gTMStrategy.findMany({
-          where: { userId: dbUser.id },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-          select: {
-            id: true,
-            icpAnalysisId: true,
-            createdAt: true,
-          },
-        }),
-      ]);
-
-    const messagingCount = gtmStrategies.filter(
-      (s) => s.messagingResult
-    ).length;
-    const checklistsCount = gtmStrategies.filter(
-      (s) => s.checklistResult
-    ).length;
+    const stats = await getDashboardStats(dbUser.id);
 
     return new Response(
       JSON.stringify({
-        icpAnalysesCount,
-        gtmStrategiesCount: gtmStrategies.length,
-        messagingCount,
-        checklistsCount,
-        recentICPs,
-        recentStrategies,
+        ...stats,
+        recentICPs: stats.recentICPs.map((icp) => ({
+          ...icp,
+          createdAt: icp.createdAt.toISOString(),
+        })),
+        recentStrategies: stats.recentStrategies.map((s) => ({
+          ...s,
+          createdAt: s.createdAt.toISOString(),
+        })),
       }),
       {
         status: 200,
