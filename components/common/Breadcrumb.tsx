@@ -79,7 +79,7 @@ export function Breadcrumb({ isAdmin, initialPlanInfo }: BreadcrumbProps) {
           href="/dashboard"
           className="hover:text-foreground transition-colors"
         >
-          <ProjectNameWithBadge />
+          <ProjectNameWithBadge showBadge={false} />
         </Link>
         <ChevronRightIcon className="w-4 h-4" />
         <span className="text-foreground font-medium">{pageName}</span>

@@ -111,7 +111,7 @@ export default function WaitlistPage() {
                 />
               </div>
               <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-primary flex items-center justify-center gap-2">
-                <ProjectNameWithBadge />
+                <ProjectNameWithBadge showBadge={false} />
               </h2>
             </div>
 
