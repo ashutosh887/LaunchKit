@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
+import { getDbUserByClerkId } from "@/lib/cached-user";
 import { getDashboardStats } from "@/lib/dashboard-stats";
 import { DashboardClient } from "./DashboardClient";
 import { PageContainer } from "@/components/common/PageContainer";
@@ -40,10 +40,7 @@ export default async function DashboardPage() {
     );
   }
 
-  const dbUser = await prisma.user.findUnique({
-    where: { clerkId: userId },
-    select: { id: true },
-  });
+  const dbUser = await getDbUserByClerkId(userId);
 
   if (!dbUser) {
     return (
